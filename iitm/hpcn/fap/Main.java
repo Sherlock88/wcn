@@ -2,11 +2,9 @@ package iitm.hpcn.fap;
 
 import hpcn.iitm.fap.resources.CDFHelper;
 import hpcn.iitm.fap.resources.Params;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
 
 public class Main {
 

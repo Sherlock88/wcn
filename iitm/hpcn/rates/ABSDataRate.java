@@ -256,8 +256,6 @@ public class ABSDataRate {
 		capacityStdFV.close();
 		capacityStdMA.close();
 		capacityStdFA.close();
-		System.out.println("\nAll done.");
-		
+		System.out.println("\nAll done.");	
 	}
-
 }

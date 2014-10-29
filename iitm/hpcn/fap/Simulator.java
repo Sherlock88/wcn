@@ -25,17 +25,10 @@ public class Simulator {
 	private ArrayList<UE> listUE = new ArrayList<UE>();
 	private ArrayList<UE> listMUE = new ArrayList<UE>();
 	private ArrayList<UE> listFUE = new ArrayList<UE>();
-	
 	private Set<FAP> setFAP = new HashSet<FAP>();
-
 	private Set<UE> associatedMacroUE = new HashSet<UE>();
-	
 	private int macroVictimCount = 0;
-
 	private int associationType = 0;
-	
-	private int scenarioCount = 0;
-
 	private double ee = 0;
 	private double capacity = 0;
 	private double capacityMV = 0;
@@ -43,12 +36,11 @@ public class Simulator {
 	private double capacityFV = 0;
 	private double capacityF = 0;
 	private double capacityAllVictim = 0;
-	
+	private int scenarioCount;
 	private double capacity5PerMV = 0;
 	private double capacity5PerFV = 0;
 	private double capacity5PerAllVictim = 0;
 	
-	private SummaryStatistics allFAP = new SummaryStatistics();
 	private SummaryStatistics bitRateMV = new SummaryStatistics();
 	private SummaryStatistics bitRateFV = new SummaryStatistics();
 	private SummaryStatistics bitRateMA = new SummaryStatistics();
@@ -115,6 +107,7 @@ public class Simulator {
 			Scanner fileScanner = new Scanner(new File(ABSFile));
 			this.alphaM = fileScanner.nextDouble();
 			this.alphaP = fileScanner.nextDouble();
+			fileScanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}	
@@ -626,6 +619,7 @@ public class Simulator {
 
 			set.add(point);
 		}
+		fileScanner.close();
 		return set;
 	}
 

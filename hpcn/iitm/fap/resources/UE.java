@@ -3,7 +3,6 @@ package hpcn.iitm.fap.resources;
 import hpcn.iitm.fap.resources.FAP;
 import hpcn.iitm.fap.resources.Params;
 import hpcn.iitm.fap.resources.TargetBsDTO;
-import iitm.hpcn.fap.Main;
 import iitm.hpcn.fap.PathLoss;
 
 import java.awt.geom.Point2D;
