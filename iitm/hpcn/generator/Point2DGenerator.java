@@ -27,21 +27,21 @@ public class Point2DGenerator {
 	}
 	
 	public static void main(String[] args) {
-		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 2 400".split(" ");	//400 UE per km-sq
-		N_SCENARIOS = Integer.parseInt(args[3]);
+		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 MACRO-Dist-600-2000 2 400".split(" ");	//400 UE per km-sq
+		N_SCENARIOS = Integer.parseInt(args[4]);
 		int radiusM = 600;
 		int radiusP = 200;
 		int n_pico = 6;
 		int n_ue = 2000;
-		double density = Double.parseDouble(args[4]);
-		femtoClusterGenerator(radiusM, radiusP, n_pico, n_ue, density, args[0], args[1], args[2]);
+		double density = Double.parseDouble(args[5]);
+		femtoClusterGenerator(radiusM, radiusP, n_pico, n_ue, density, args[0], args[1], args[2], args[3]);
 	}
 	
-	public static void femtoClusterGenerator(int radiusM, int radiusP, int femtoCount, int ueCount, double ueDensity, String path, String ueFileName, String femtoFileName) {
+	public static void femtoClusterGenerator(int radiusM, int radiusP, int femtoCount, int ueCount, double ueDensity, String path, String ueFileName, String femtoFileName, String macroFileName) {
 		Point2DGenerator g = new Point2DGenerator(radiusM, radiusP, femtoCount, ueCount, ueDensity);
 		for (int i = 1; i <= N_SCENARIOS; i++) {
 			g.generateClusterScenario();
-			g.saveToFile(path, ueFileName + "-" + i, femtoFileName + "-" + i);
+			g.saveToFile(path, ueFileName + "-" + i, femtoFileName + "-" + i, macroFileName + "-" + i);
 		}
 	}
 	
@@ -80,9 +80,10 @@ public class Point2DGenerator {
 		}
 	}
 	
-	public void saveToFile(String path, String ueFileName, String femtoFileName) {
+	public void saveToFile(String path, String ueFileName, String femtoFileName, String macroFileName) {
 		try {
 			new File(path).mkdirs();
+			printPoints(setMACRO, new PrintWriter(path + macroFileName));
 			printPoints(setFEMTO, new PrintWriter(path + femtoFileName));
 			printPoints(setUE, new PrintWriter(path + ueFileName));
 					
