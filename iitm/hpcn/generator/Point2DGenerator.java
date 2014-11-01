@@ -4,7 +4,7 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -13,9 +13,9 @@ public class Point2DGenerator {
 	
 	private int radiusMacro, radiusPico, femtoCount, ueCount;
 	private double hotSpotProb = 2.0/3;	//Non-Uniform Distribution
-	private Set<Point2D> setMACRO;
-	private Set<Point2D> setFEMTO;
-	private Set<Point2D> setUE;
+	private static Set<Point2D> setMACRO;
+	private static Set<Point2D> setFEMTO;
+	private static Set<Point2D> setUE;
 	private int scenarioCount = 0;
 	
 	public Point2DGenerator(int radiusM, int radiusP, int femtoCount, int ueCount, double ueDensity) {
@@ -40,6 +40,9 @@ public class Point2DGenerator {
 	public static void femtoClusterGenerator(int radiusM, int radiusP, int femtoCount, int ueCount, double ueDensity, String path, String ueFileName, String femtoFileName, String macroFileName) {
 		Point2DGenerator g = new Point2DGenerator(radiusM, radiusP, femtoCount, ueCount, ueDensity);
 		for (int i = 1; i <= N_SCENARIOS; i++) {
+			setMACRO = new LinkedHashSet<Point2D>();
+			setFEMTO = new LinkedHashSet<Point2D>();
+			setUE = new LinkedHashSet<Point2D>();
 			g.generateClusterScenario();
 			g.saveToFile(path, ueFileName + "-" + i, femtoFileName + "-" + i, macroFileName + "-" + i);
 		}
@@ -50,11 +53,16 @@ public class Point2DGenerator {
 		int i, r = 2 * radiusMacro;
 		double theta = Math.random() * 2 * Math.PI;
 		++scenarioCount;
-		System.out.println("Scenario instance : " + scenarioCount);
+		System.out.println("---------------------------\nScenario instance : " + scenarioCount);
 
 		// Generate a MACROCell at the center and six MACROCells surrounding it
-		setMACRO = new HashSet<Point2D>();
+		
+		// MACROCell at the center
 		setMACRO.add(new Point2D.Double(0, 0));
+		picoFixedGenerator(0, 0, radiusMacro, femtoCount);
+		ueGenerator(0, 0, 0);
+		
+		// Surrounding MACROCells
 		for(i = 0; i < 6; i++)
 		{
 			theta += i * (Math.PI / 6);
@@ -62,7 +70,7 @@ public class Point2DGenerator {
 			y = r * Math.sin(theta);
 			setMACRO.add(new Point2D.Double(x, y));
 			picoFixedGenerator(x, y, radiusMacro, femtoCount);
-			ueGenerator(x, y);
+			ueGenerator(x, y, i + 1);
 		}
 	}
 	
@@ -71,11 +79,10 @@ public class Point2DGenerator {
 		double xCo, yCo;
 		double distance = radius - (radius / 4);
 		double angle = (2 * Math.PI) / picoCount;
-		setFEMTO = new HashSet<Point2D>();
 		for(int i = 0; i < picoCount; i++)
 		{
-			xCo = distance * Math.cos(i * angle);
-			yCo = distance * Math.sin(i * angle);
+			xCo = x + distance * Math.cos(i * angle);
+			yCo = y + distance * Math.sin(i * angle);
 			setFEMTO.add(new Point2D.Double(xCo, yCo));
 		}
 	}
@@ -92,12 +99,13 @@ public class Point2DGenerator {
 		}
 	}
 	
-	public void ueGenerator(double xMacro, double yMacro)
+	public void ueGenerator(double xMacro, double yMacro, int macroIndex)
 	{
-		Random prob = new Random();
-		int hotspotUECount = 0, uniformUECount = 0;
+		Random prob = new Random((long)xMacro + (long)yMacro);
+		int hotspotUECount = 0, uniformUECount = 0, i;
+		Point2D[] arrFEMTO = setFEMTO.toArray(new Point2D[setFEMTO.size()]); 
 		
-		for(int i = 1; i <= this.ueCount; i++)
+		for(i = 1; i <= this.ueCount; i++)
 		{
 			if(prob.nextDouble() < (this.hotSpotProb))
 				hotspotUECount++;
@@ -107,10 +115,11 @@ public class Point2DGenerator {
 		
 		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount);
 		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0);
-		Set<Point2D> points = new HashSet<Point2D>();
 		
-		for(Point2D pico : setFEMTO)
-			getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0);
+		for(i = macroIndex; i < macroIndex + 6; i++)
+			getPoints(arrFEMTO[i].getX(), arrFEMTO[i].getY(), radiusPico, hotspotUECount / femtoCount, 0, 0);
+//		for(Point2D pico : setFEMTO)
+//			getPoints(pico.getX(), pico.getY(), radiusPico, hotspotUECount / femtoCount, 0, 0);
 	}
 	
 	/*
@@ -122,7 +131,7 @@ public class Point2DGenerator {
 		Random randDist = new Random();
 		Random randAngle = new Random();
 		
-		setUE = new HashSet<Point2D>();
+		//setUE = new LinkedHashSet<Point2D>();
 		for (int i = 0; i < c; i++) {
 			double d = restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter)
 					* Math.sqrt(randDist.nextDouble());
