@@ -51,7 +51,7 @@ public class Point2DGenerator {
 	public void generateClusterScenario() {
 		double x, y;
 		int i, r = 2 * radiusMacro;
-		double theta = Math.random() * 2 * Math.PI;
+		double theta = 0;
 		++scenarioCount;
 		System.out.println("---------------------------\nScenario instance : " + scenarioCount);
 
@@ -65,7 +65,7 @@ public class Point2DGenerator {
 		// Surrounding MACROCells
 		for(i = 0; i < 6; i++)
 		{
-			theta += i * (Math.PI / 6);
+			theta += i * (2 * Math.PI / 6);
 			x = r * Math.cos(theta);
 			y = r * Math.sin(theta);
 			setMACRO.add(new Point2D.Double(x, y));
