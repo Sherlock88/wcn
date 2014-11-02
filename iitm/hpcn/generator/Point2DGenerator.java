@@ -116,10 +116,9 @@ public class Point2DGenerator {
 		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount);
 		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0);
 		
+		macroIndex *= 6;
 		for(i = macroIndex; i < macroIndex + 6; i++)
 			getPoints(arrFEMTO[i].getX(), arrFEMTO[i].getY(), radiusPico, hotspotUECount / femtoCount, 0, 0);
-//		for(Point2D pico : setFEMTO)
-//			getPoints(pico.getX(), pico.getY(), radiusPico, hotspotUECount / femtoCount, 0, 0);
 	}
 	
 	/*
