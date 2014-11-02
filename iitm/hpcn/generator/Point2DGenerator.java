@@ -65,7 +65,7 @@ public class Point2DGenerator {
 		// Surrounding MACROCells
 		for(i = 0; i < 6; i++)
 		{
-			theta += i * (2 * Math.PI / 6);
+			theta = i * (2 * Math.PI / 6);
 			x = r * Math.cos(theta);
 			y = r * Math.sin(theta);
 			setMACRO.add(new Point2D.Double(x, y));
