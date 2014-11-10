@@ -12,7 +12,7 @@ public class Point2DGenerator {
 	public static int N_SCENARIOS;
 	
 	private int radiusMacro, radiusPico, femtoCount, ueCount;
-	private double hotSpotProb = 2.0/3;	//Non-Uniform Distribution
+	private double hotSpotProb = 2.0/3;			//Non-Uniform Distribution
 	private static Set<Point2D> setMACRO;
 	private static Set<Point2D> setFEMTO;
 	private static Set<Point2D> setUE;
