@@ -83,7 +83,7 @@ public class Point2DGenerator {
 	{
 		double xCo, yCo;
 		double distance;
-		picoCount = 2 + random.nextInt(picoCount - 2);		// Randomizing Picocell count/Macrocell
+		picoCount = 2 + random.nextInt(picoCount - 2);		// Randomizing Picocell#/Macrocell
 		double angle = (2 * Math.PI) / picoCount;
 		totalPicoCount += picoCount;
 		picoPerMacro.addElement(new Integer(picoCount));
@@ -111,18 +111,6 @@ public class Point2DGenerator {
 		}
 	}
 	
-	public void saveToFile(String path, String ueFileName, String femtoFileName, String macroFileName) {
-		try {
-			new File(path).mkdirs();
-			printPoints(setMACRO, new PrintWriter(path + macroFileName));
-			printPoints(setFEMTO, new PrintWriter(path + femtoFileName));
-			printPoints(setUE, new PrintWriter(path + ueFileName));
-					
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public void ueGenerator(double xMacro, double yMacro, int macroIndex)
 	{
 		Integer intPico;
@@ -146,27 +134,51 @@ public class Point2DGenerator {
 			getPoints(arrFEMTO[i].getX(), arrFEMTO[i].getY(), radiusPico, hotspotUECount / intPico, 0, 0);
 	}
 	
-	/*
-	 * Centre is at (X,Y) random radius will belong [restrictedZoneInner,R -
-	 * restrictedZoneOuter] number of points c
-	 */
+	// Center is at (X,Y) random radius will belong [restrictedZoneInner,R - restrictedZoneOuter] number of points c
 	private void getPoints(double X, double Y, double R, int c,
 			double restrictedZoneInner, double restrictedZoneOuter) {
 		for (int i = 0; i < c; i++) {
 			double d = restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter)
 					* Math.sqrt(random.nextDouble());
 
-			double theta = 2 * Math.PI * random.nextDouble();	// [Correct]
-			double x = X + d * Math.cos(theta);		//angle theta should be in radians
+			double theta = 2 * Math.PI * random.nextDouble();
+			double x = X + d * Math.cos(theta);
 			double y = Y + d * Math.sin(theta);
 
 			setUE.add(new Point2D.Double(x, y));
 		}
 	}
+
+	public void saveToFile(String path, String ueFileName, String femtoFileName, String macroFileName) {
+		try {
+			new File(path).mkdirs();
+			printPoints(setMACRO, new PrintWriter(path + macroFileName), true);
+			printPoints(setFEMTO, new PrintWriter(path + femtoFileName), false);
+			printPoints(setUE, new PrintWriter(path + ueFileName), false);
+					
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 	
-	private void printPoints(Set<Point2D> points, PrintWriter out) {
-		for (Point2D point : points) {
-			out.printf("%6.4f %6.4f%n", point.getX(), point.getY());
+	private void printPoints(Set<Point2D> points, PrintWriter out, boolean isMacro) {
+		if(isMacro)
+		{
+			Iterator<Point2D> itrMacro= points.iterator();
+			Iterator<Integer> itrPicoPerMacro = picoPerMacro.iterator();
+			
+			while(itrMacro.hasNext() && itrPicoPerMacro.hasNext())
+			{
+				Point2D point = itrMacro.next();
+				int picoPerMacro = ((Integer)itrPicoPerMacro.next()).intValue();
+				out.printf("%6.4f %6.4f %d%n", point.getX(), point.getY(), picoPerMacro);
+			}
+		}
+		else
+		{
+			for (Point2D point : points) {
+				out.printf("%6.4f %6.4f%n", point.getX(), point.getY());
+			}
 		}
 		out.close();
 	}
