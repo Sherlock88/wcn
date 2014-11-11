@@ -173,7 +173,7 @@ public class Main {
 				for(int i = 1; i <= RUNS; i++)
 				{
 					Simulator scenario = new Simulator();
-					scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, runType, i);
+					scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, runType);
 					scenario.runSim();
 
 					if(runType == 5)

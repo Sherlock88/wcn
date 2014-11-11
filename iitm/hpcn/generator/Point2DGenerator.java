@@ -17,12 +17,14 @@ public class Point2DGenerator {
 	private static Set<Point2D> setMACRO, setFEMTO, setUE;
 	private static Vector<Integer> picoPerMacro = new Vector<Integer>();
 	private final int MBSToPBS = 75, PBSToPBS = 40, MBSToUE = 35, PBSToUE = 10;
+	Random random;
 	
 	public Point2DGenerator(int radiusM, int radiusP, int picoCount, int ueCount, double ueDensity) {
 		this.radiusMacro = radiusM;
 		this.radiusPico = radiusP;
 		this.picoCount = picoCount;
 		totalPicoCount = 0;
+		random = new Random(System.currentTimeMillis());
 		this.ueCount = (int) Math.ceil(ueDensity *  Math.PI * (radiusM/1000.0) * (radiusM/1000.0));
 		System.out.println("UE count : " + this.ueCount);
 	}
@@ -81,8 +83,7 @@ public class Point2DGenerator {
 	{
 		double xCo, yCo;
 		double distance;
-		Random random = new Random();
-		picoCount = 2 + random.nextInt(picoCount - 2);
+		picoCount = 2 + random.nextInt(picoCount - 2);		// Randomizing Picocell count/Macrocell
 		double angle = (2 * Math.PI) / picoCount;
 		totalPicoCount += picoCount;
 		picoPerMacro.addElement(new Integer(picoCount));
@@ -124,14 +125,13 @@ public class Point2DGenerator {
 	
 	public void ueGenerator(double xMacro, double yMacro, int macroIndex)
 	{
-		Random prob = new Random((long)xMacro + (long)yMacro);
 		Integer intPico;
 		int hotspotUECount = 0, uniformUECount = 0, i;
 		Point2D[] arrFEMTO = setFEMTO.toArray(new Point2D[setFEMTO.size()]); 
 		
 		for(i = 1; i <= this.ueCount; i++)
 		{
-			if(prob.nextDouble() < (this.hotSpotProb))
+			if(random.nextDouble() < (this.hotSpotProb))
 				hotspotUECount++;
 			else
 				uniformUECount++;
@@ -150,17 +150,13 @@ public class Point2DGenerator {
 	 * Centre is at (X,Y) random radius will belong [restrictedZoneInner,R -
 	 * restrictedZoneOuter] number of points c
 	 */
-	private void getPoints(double X, double Y, double R, int c,	//raj added restrictedZoneOuter
+	private void getPoints(double X, double Y, double R, int c,
 			double restrictedZoneInner, double restrictedZoneOuter) {
-		Random randDist = new Random();
-		Random randAngle = new Random();
-		
-		//setUE = new LinkedHashSet<Point2D>();
 		for (int i = 0; i < c; i++) {
 			double d = restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter)
-					* Math.sqrt(randDist.nextDouble());
+					* Math.sqrt(random.nextDouble());
 
-			double theta = 2 * Math.PI * randAngle.nextDouble();	// [Correct]
+			double theta = 2 * Math.PI * random.nextDouble();	// [Correct]
 			double x = X + d * Math.cos(theta);		//angle theta should be in radians
 			double y = Y + d * Math.sin(theta);
 

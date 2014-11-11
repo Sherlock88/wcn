@@ -20,8 +20,6 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 public class Simulator {
 
 	private Set<UE> setUE = new HashSet<UE>();
-	
-	//TODO: Edit here
 	private ArrayList<UE> listUE = new ArrayList<UE>();
 	private ArrayList<UE> listMUE = new ArrayList<UE>();
 	private ArrayList<UE> listFUE = new ArrayList<UE>();
@@ -36,7 +34,6 @@ public class Simulator {
 	private double capacityFV = 0;
 	private double capacityF = 0;
 	private double capacityAllVictim = 0;
-	private int scenarioCount;
 	private double capacity5PerMV = 0;
 	private double capacity5PerFV = 0;
 	private double capacity5PerAllVictim = 0;
@@ -81,9 +78,8 @@ public class Simulator {
 
 	boolean ABSmode;
 
-	public void init(String UEFile, String FAPFile, int associationType, int scenarioCount) {
+	public void init(String UEFile, String FAPFile, int associationType) {
 		this.ABSmode = false;
-		this.scenarioCount = scenarioCount;
 		this.associationType = associationType;
 		try {
 			int id = 0;

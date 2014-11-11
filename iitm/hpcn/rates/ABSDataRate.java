@@ -137,7 +137,7 @@ public class ABSDataRate {
 		{
 			System.out.println("Scenario - " + i);
 			Simulator scenarioABS = new Simulator();
-			scenarioABS.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, runType, i);
+			scenarioABS.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, runType);
 			scenarioABS.init_2("matlabData/Results/ABS_value_" + i);
 			scenarioABS.runSim_2(RUNS);
 			
