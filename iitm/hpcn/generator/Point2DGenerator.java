@@ -1,3 +1,13 @@
+
+/*
+ * Scenario constraints:
+ * 1. One Macrocell at center (0,0) and six others uniformly surrounding it
+ * 2. Two to five Picocells per Macrocell
+ * 3. Each Picocell is located at a varying distance from the Macrocell it is attached to
+ * 4. Distance between MBS & PBS is >= 75m
+ * 5. Distance between PBS & PBS is >= 40m
+ */
+
 package iitm.hpcn.generator;
 
 import java.io.FileNotFoundException;
@@ -34,7 +44,7 @@ public class Point2DGenerator {
 		N_SCENARIOS = Integer.parseInt(args[4]);
 		int radiusM = 600;
 		int radiusP = 200;
-		int n_pico = 6;
+		int n_pico = 5;
 		int n_ue = 2000;
 		double density = Double.parseDouble(args[5]);
 		femtoClusterGenerator(radiusM, radiusP, n_pico, n_ue, density, args[0], args[1], args[2], args[3]);
@@ -82,9 +92,8 @@ public class Point2DGenerator {
 	public void picoFixedGenerator(double x, double y, int radiusMacro, int picoCount)
 	{
 		double xCo, yCo;
-		double distance;
+		double distance, angle;
 		picoCount = 2 + random.nextInt(picoCount - 2);		// Randomizing Picocell#/Macrocell
-		double angle = (2 * Math.PI) / picoCount;
 		totalPicoCount += picoCount;
 		picoPerMacro.addElement(new Integer(picoCount));
 		
@@ -93,8 +102,9 @@ public class Point2DGenerator {
 		{
 			// Generating Picocell at a distance >= MBSToPBS from the Macrocell it's attached to
 			distance = MBSToPBS + random.nextDouble() * (radiusMacro - MBSToPBS);
-			xCo = x + distance * Math.cos(i * angle);
-			yCo = y + distance * Math.sin(i * angle);
+			angle = (2 * Math.PI) * random.nextDouble();
+			xCo = x + distance * Math.cos(angle);
+			yCo = y + distance * Math.sin(angle);
 			
 			// Generating Picocell at a distance >= PBSToPBS from another Picocell
 			Iterator<Point2D> itrPico = setFEMTO.iterator();
