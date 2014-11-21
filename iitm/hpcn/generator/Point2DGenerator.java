@@ -6,6 +6,8 @@
  * 3. Each Picocell is located at a varying distance from the Macrocell it is attached to
  * 4. Distance between MBS & PBS is >= 75m
  * 5. Distance between PBS & PBS is >= 40m
+ * 6. Distance between MBS & UE is >= 35m
+ * 7. Distance between PBS & UE is >= 10m
  */
 
 package iitm.hpcn.generator;
@@ -22,7 +24,7 @@ import java.io.File;
 
 public class Point2DGenerator {
 	public static int N_SCENARIOS, totalPicoCount;
-	private int radiusMacro, radiusPico, picoCount, ueCount, scenarioCount;
+	private int radiusMacro, radiusPico, picoCount, ueCount, scenarioCount, resourceBlocksRequired, expectedResourceBlocksRequired = 0;
 	private double hotSpotProb = 2.0/3;			//Non-Uniform Distribution
 	private static Set<Point2D> setMACRO, setFEMTO, setUE;
 	private static Vector<Integer> picoPerMacro = new Vector<Integer>();
@@ -45,7 +47,15 @@ public class Point2DGenerator {
 	public static final double VOICEPROB = 0.2;
 	public static final double DATAPROB = 0.35;
 	public static final double VIDEOPROB = 0.45;
-		
+	
+	// Resource blocks
+	public static final int RBCOUNT	= 250;
+	public static final int SUBCHANNEL	= 20;	//KHz
+	public static final int VOICERB = 1;		// Sub-channels
+	public static final int DATARB = 2;			// Sub-channels
+	public static final int VIDEORB = 7;		// Sub-channels
+	
+	
 	public Point2DGenerator(int radiusM, int radiusP, int picoCount, double ueDensity) {
 		this.radiusMacro = radiusM;
 		this.radiusPico = radiusP;
@@ -53,6 +63,7 @@ public class Point2DGenerator {
 		totalPicoCount = 0;
 		random = new Random(System.currentTimeMillis());
 		this.ueCount = (int) Math.ceil(ueDensity *  Math.PI * (radiusM/1000.0) * (radiusM/1000.0));
+		ueCount = 50;
 	}
 	
 	public static void main(String[] args) {
@@ -91,6 +102,7 @@ public class Point2DGenerator {
 		setMACRO.add(new Point2D.Double(0, 0));
 		picoFixedGenerator(0, 0, radiusMacro, picoCount);
 		ueGenerator(0, 0, 0);
+		expectedResourceBlocksRequired += resourceBlocksRequired;
 		
 		// Surrounding Macrocells
 		for(i = 0; i < 6; i++)
@@ -101,7 +113,11 @@ public class Point2DGenerator {
 			setMACRO.add(new Point2D.Double(x, y));
 			picoFixedGenerator(x, y, radiusMacro, picoCount);
 			ueGenerator(x, y, i);
+			expectedResourceBlocksRequired += resourceBlocksRequired;
 		}
+		
+		System.out.println("\nFor " + this.ueCount + " UEs, expected RB requirement averaging over " + (7 * N_SCENARIOS) + " MCs in " 
+							+ N_SCENARIOS + " scenarios is " + expectedResourceBlocksRequired / (7 * N_SCENARIOS));
 	}
 	
 	public void picoFixedGenerator(double x, double y, int radiusMacro, int picoCount)
@@ -142,6 +158,7 @@ public class Point2DGenerator {
 		int i, hotspotUECount = 0, uniformUECount = 0;
 		double probDataRate;
 		Point2D[] arrFEMTO = setFEMTO.toArray(new Point2D[setFEMTO.size()]); 
+		resourceBlocksRequired = 0;
 		
 		for(i = 1; i <= this.ueCount; i++)
 		{
@@ -152,15 +169,24 @@ public class Point2DGenerator {
 			
 			probDataRate = random.nextDouble();
 			if(0 <= probDataRate && probDataRate <= VOICEPROB)
+			{
 				ueDataDemands.add(VOICE);
+				resourceBlocksRequired += VOICERB;
+			}
 			else
 				if(VOICEPROB < probDataRate && probDataRate < DATAPROB)
+				{
 					ueDataDemands.add(DATA);
+					resourceBlocksRequired += DATARB;
+				}
 				else
+				{
 					ueDataDemands.add(VIDEO);
+					resourceBlocksRequired += VIDEORB;
+				}
 		}
 		
-		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount);
+		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount + ", Resource Blocks: " + resourceBlocksRequired);
 		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0, STATIONMACRO);
 		
 		intPico = (Integer) picoPerMacro.get(macroIndex);
