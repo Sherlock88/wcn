@@ -26,9 +26,26 @@ public class Point2DGenerator {
 	private double hotSpotProb = 2.0/3;			//Non-Uniform Distribution
 	private static Set<Point2D> setMACRO, setFEMTO, setUE;
 	private static Vector<Integer> picoPerMacro = new Vector<Integer>();
+	private static Vector<Integer> ueDataDemands = new Vector<Integer>();
 	private final int MBSToPBS = 75, PBSToPBS = 40, MBSToUE = 35, PBSToUE = 10;
 	Random random;
 	
+	// Station types
+	public static final int STATIONMACRO = 0;
+	public static final int STATIONPICO = 1;
+	public static final int STATIONUE = 2;
+	
+	// Data rates
+	public static final int VOICE = 0;
+	public static final int DATA = 1;
+	public static final int VIDEO = 2;
+	public static final int VOICERATE = 16;
+	public static final int DATARATE = 48;
+	public static final int VIDEORATE = 128;
+	public static final double VOICEPROB = 0.2;
+	public static final double DATAPROB = 0.35;
+	public static final double VIDEOPROB = 0.45;
+		
 	public Point2DGenerator(int radiusM, int radiusP, int picoCount, int ueCount, double ueDensity) {
 		this.radiusMacro = radiusM;
 		this.radiusPico = radiusP;
@@ -124,7 +141,8 @@ public class Point2DGenerator {
 	public void ueGenerator(double xMacro, double yMacro, int macroIndex)
 	{
 		Integer intPico;
-		int hotspotUECount = 0, uniformUECount = 0, i;
+		int i, hotspotUECount = 0, uniformUECount = 0;
+		double probDataRate;
 		Point2D[] arrFEMTO = setFEMTO.toArray(new Point2D[setFEMTO.size()]); 
 		
 		for(i = 1; i <= this.ueCount; i++)
@@ -133,6 +151,15 @@ public class Point2DGenerator {
 				hotspotUECount++;
 			else
 				uniformUECount++;
+			
+			probDataRate = random.nextDouble();
+			if(0 <= probDataRate && probDataRate <= VOICEPROB)
+				ueDataDemands.add(VOICE);
+			else
+				if(VOICEPROB < probDataRate && probDataRate < DATAPROB)
+					ueDataDemands.add(DATA);
+				else
+					ueDataDemands.add(VIDEO);
 		}
 		
 		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount);
@@ -162,17 +189,17 @@ public class Point2DGenerator {
 	public void saveToFile(String path, String ueFileName, String femtoFileName, String macroFileName) {
 		try {
 			new File(path).mkdirs();
-			printPoints(setMACRO, new PrintWriter(path + macroFileName), true);
-			printPoints(setFEMTO, new PrintWriter(path + femtoFileName), false);
-			printPoints(setUE, new PrintWriter(path + ueFileName), false);
+			printPoints(setMACRO, new PrintWriter(path + macroFileName), STATIONMACRO);
+			printPoints(setFEMTO, new PrintWriter(path + femtoFileName), STATIONPICO);
+			printPoints(setUE, new PrintWriter(path + ueFileName), STATIONUE);
 					
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void printPoints(Set<Point2D> points, PrintWriter out, boolean isMacro) {
-		if(isMacro)
+	private void printPoints(Set<Point2D> points, PrintWriter out, int stationType) {
+		if(stationType == STATIONMACRO)
 		{
 			Iterator<Point2D> itrMacro= points.iterator();
 			Iterator<Integer> itrPicoPerMacro = picoPerMacro.iterator();
@@ -184,12 +211,25 @@ public class Point2DGenerator {
 				out.printf("%6.4f %6.4f %d%n", point.getX(), point.getY(), picoPerMacro);
 			}
 		}
-		else
-		{
-			for (Point2D point : points) {
-				out.printf("%6.4f %6.4f%n", point.getX(), point.getY());
+		else 
+			if(stationType == STATIONPICO)
+			{
+				for (Point2D point : points) {
+					out.printf("%6.4f %6.4f%n", point.getX(), point.getY());
+				}
 			}
-		}
+			else
+			{
+				Iterator<Point2D> itrMacro= points.iterator();
+				Iterator<Integer> itrUEDemand = ueDataDemands.iterator();
+				
+				while(itrMacro.hasNext() && itrUEDemand.hasNext())
+				{
+					Point2D point = itrMacro.next();
+					int ueDataDemand = ((Integer)itrUEDemand.next()).intValue();
+					out.printf("%6.4f %6.4f %d%n", point.getX(), point.getY(), ueDataDemand);
+				}
+			}
 		out.close();
 	}
 }

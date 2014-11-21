@@ -243,7 +243,7 @@ public class UE {
 			FAP pTarget) {
 		int fapID = pTarget.getId();
 		if (fapSet.contains(fapID)) {
-			System.err.println("FAP(" + fapID + ") allready present");
+			System.err.println("FAP(" + fapID + ") already present");
 			return;
 		}
 		fapSet.add(fapID);

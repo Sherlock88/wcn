@@ -133,6 +133,7 @@ public class Simulator {
 		//sortUEperBitRate();
 		makePercentileBitrateList();
 		makeSummaryStatistics();
+		System.out.println("MUE: " + associatedMacroUE.size());
 	}
 
 	public void calculateSinrRange() {
@@ -169,7 +170,6 @@ public class Simulator {
 	public void warmUpUe() {
 		for (UE ue : setUE) {
 			double macroSignal = PathLoss.rxPowerWatt(ue, null);	//NULL represents Macrocell
-
 			double noiseWatt = PathLoss.dB2watt(Params.NOISE_DB);
 			double sinrMacro_IL = 0.0;
 			double sinrMacro_IF = 0.0;
@@ -222,9 +222,7 @@ public class Simulator {
 		for (UE ue : setUE) {
 			FAP target = null;
 
-			if (associationType == Params.MAXRSRP)
-				target = ue.maxRsrp();
-			else if (associationType == Params.COMBINEDABS)
+			if (associationType == Params.MAXRSRP || associationType == Params.COMBINEDABS)
 				target = ue.maxRsrp();	// For combined ABS calculation, association criteria is assumed to be RSRP based
 			else
 				System.err.println("ERROR :: unknown association tech all associated to macro bs");

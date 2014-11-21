@@ -22,7 +22,7 @@ public class Main {
 	
 	public static void main(String[] args) throws Exception {
 
-		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 1000 0.1 6.0".split(" ");
+		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 2 0.1 6.0".split(" ");
 		RUNS = Integer.parseInt(args[3]);
 		//ALPHA = Double.parseDouble(args[4]);
 		//BIAS = Double.parseDouble(args[5]);
