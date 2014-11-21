@@ -23,8 +23,8 @@ import java.util.Set;
 import java.io.File;
 
 public class Point2DGenerator {
-	public static int N_SCENARIOS, totalPicoCount;
-	private int radiusMacro, radiusPico, picoCount, ueCount, scenarioCount, resourceBlocksRequired, expectedResourceBlocksRequired = 0;
+	public static int N_SCENARIOS, totalPicoCount, expectedResourceBlocksRequired = 0, ueCount;
+	private int radiusMacro, radiusPico, picoCount, scenarioCount, resourceBlocksRequired;
 	private double hotSpotProb = 2.0/3;			//Non-Uniform Distribution
 	private static Set<Point2D> setMACRO, setFEMTO, setUE;
 	private static Vector<Integer> picoPerMacro = new Vector<Integer>();
@@ -87,6 +87,9 @@ public class Point2DGenerator {
 			g.generateClusterScenario();
 			g.saveToFile(path, ueFileName + "-" + i, femtoFileName + "-" + i, macroFileName + "-" + i);
 		}
+		
+		System.out.println("\nFor " + ueCount + " UEs, expected RB requirement averaging over " + (7 * N_SCENARIOS) + " MCs in " 
+				+ N_SCENARIOS + " scenarios is " + expectedResourceBlocksRequired / (7 * N_SCENARIOS));
 	}
 	
 	public void generateClusterScenario() {
@@ -115,9 +118,6 @@ public class Point2DGenerator {
 			ueGenerator(x, y, i);
 			expectedResourceBlocksRequired += resourceBlocksRequired;
 		}
-		
-		System.out.println("\nFor " + this.ueCount + " UEs, expected RB requirement averaging over " + (7 * N_SCENARIOS) + " MCs in " 
-							+ N_SCENARIOS + " scenarios is " + expectedResourceBlocksRequired / (7 * N_SCENARIOS));
 	}
 	
 	public void picoFixedGenerator(double x, double y, int radiusMacro, int picoCount)
