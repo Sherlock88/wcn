@@ -11,17 +11,6 @@ public interface Params {
 	public static final int SCs_FOR_15_MHz = 75;
 	public static final int SCs_FOR_20_MHz = 100;
 	
-	// Data rates
-	public static final int VOICE = 0;
-	public static final int DATA = 1;
-	public static final int VIDEO = 2;
-	public static final int VOICERATE = 16;
-	public static final int DATARATE = 48;
-	public static final int VIDEORATE = 128;
-	public static final double VOICEPROB = 0.2;
-	public static final double DATAPROB = 0.35;
-	public static final double VIDEOPROB = 0.45;
-	
 	//Transmitted power should be 46dbm for 10MHz bandwidth
 	public static final double MACRO_POWER = 39.8/SCs_FOR_10_MHz;	// 46 dbm for 10MHz, 43 dbm for <=5MHz
 	public static final double FAP_POWER = 1.0/SCs_FOR_10_MHz;		// 30 dbm [PICO]

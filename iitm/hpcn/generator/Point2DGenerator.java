@@ -46,14 +46,13 @@ public class Point2DGenerator {
 	public static final double DATAPROB = 0.35;
 	public static final double VIDEOPROB = 0.45;
 		
-	public Point2DGenerator(int radiusM, int radiusP, int picoCount, int ueCount, double ueDensity) {
+	public Point2DGenerator(int radiusM, int radiusP, int picoCount, double ueDensity) {
 		this.radiusMacro = radiusM;
 		this.radiusPico = radiusP;
 		this.picoCount = picoCount;
 		totalPicoCount = 0;
 		random = new Random(System.currentTimeMillis());
 		this.ueCount = (int) Math.ceil(ueDensity *  Math.PI * (radiusM/1000.0) * (radiusM/1000.0));
-		System.out.println("UE count : " + this.ueCount);
 	}
 	
 	public static void main(String[] args) {
@@ -62,13 +61,12 @@ public class Point2DGenerator {
 		int radiusM = 600;
 		int radiusP = 200;
 		int n_pico = 5;
-		int n_ue = 2000;
 		double density = Double.parseDouble(args[5]);
-		femtoClusterGenerator(radiusM, radiusP, n_pico, n_ue, density, args[0], args[1], args[2], args[3]);
+		femtoClusterGenerator(radiusM, radiusP, n_pico, density, args[0], args[1], args[2], args[3]);
 	}
 	
-	public static void femtoClusterGenerator(int radiusM, int radiusP, int picoCount, int ueCount, double ueDensity, String path, String ueFileName, String femtoFileName, String macroFileName) {
-		Point2DGenerator g = new Point2DGenerator(radiusM, radiusP, picoCount, ueCount, ueDensity);
+	public static void femtoClusterGenerator(int radiusM, int radiusP, int picoCount, double ueDensity, String path, String ueFileName, String femtoFileName, String macroFileName) {
+		Point2DGenerator g = new Point2DGenerator(radiusM, radiusP, picoCount, ueDensity);
 		for (int i = 1; i <= N_SCENARIOS; i++) {
 			setMACRO = new LinkedHashSet<Point2D>();
 			setFEMTO = new LinkedHashSet<Point2D>();
@@ -163,20 +161,26 @@ public class Point2DGenerator {
 		}
 		
 		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount);
-		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0);
+		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0, STATIONMACRO);
 		
 		intPico = (Integer) picoPerMacro.get(macroIndex);
 		System.out.println("Pico/Macro: " + intPico);
 		for(i = totalPicoCount - intPico.intValue(); i < totalPicoCount; i++)
-			getPoints(arrFEMTO[i].getX(), arrFEMTO[i].getY(), radiusPico, hotspotUECount / intPico, 0, 0);
+			getPoints(arrFEMTO[i].getX(), arrFEMTO[i].getY(), radiusPico, hotspotUECount / intPico, 0, 0, STATIONPICO);
 	}
 	
 	// Center is at (X,Y) random radius will belong [restrictedZoneInner,R - restrictedZoneOuter] number of points c
 	private void getPoints(double X, double Y, double R, int c,
-			double restrictedZoneInner, double restrictedZoneOuter) {
+			double restrictedZoneInner, double restrictedZoneOuter, int stationType) {
+		
+		double d;
+		
 		for (int i = 0; i < c; i++) {
-			double d = restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter)
-					* Math.sqrt(random.nextDouble());
+			
+			if(stationType == STATIONMACRO)
+				d = MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
+			else
+				d = PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
 
 			double theta = 2 * Math.PI * random.nextDouble();
 			double x = X + d * Math.cos(theta);
