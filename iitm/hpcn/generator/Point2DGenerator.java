@@ -29,6 +29,8 @@ public class Point2DGenerator {
 	private static Set<Point2D> setMACRO, setFEMTO, setUE;
 	private static Vector<Integer> picoPerMacro = new Vector<Integer>();
 	private static Vector<Integer> ueDataDemands = new Vector<Integer>();
+	private static Vector<Integer> ueToMC = new Vector<Integer>();
+	private static Vector<Integer> pcToMC = new Vector<Integer>();
 	private final int MBSToPBS = 75, PBSToPBS = 40, MBSToUE = 35, PBSToUE = 10;
 	Random random;
 	
@@ -62,7 +64,7 @@ public class Point2DGenerator {
 		this.picoCount = picoCount;
 		totalPicoCount = 0;
 		random = new Random(System.currentTimeMillis());
-		this.ueCount = (int) Math.ceil(ueDensity *  Math.PI * (radiusM/1000.0) * (radiusM/1000.0));
+		Point2DGenerator.ueCount = (int) Math.ceil(ueDensity *  Math.PI * (radiusM/1000.0) * (radiusM/1000.0));
 		ueCount = 50;
 	}
 	
@@ -103,24 +105,24 @@ public class Point2DGenerator {
 		
 		// Macrocell at the center
 		setMACRO.add(new Point2D.Double(0, 0));
-		picoFixedGenerator(0, 0, radiusMacro, picoCount);
+		picoFixedGenerator(0, 0, radiusMacro, picoCount, 0);
 		ueGenerator(0, 0, 0);
 		expectedResourceBlocksRequired += resourceBlocksRequired;
 		
 		// Surrounding Macrocells
-		for(i = 0; i < 6; i++)
+		for(i = 1; i <= 6; i++)
 		{
 			theta = i * (2 * Math.PI / 6);
 			x = r * Math.cos(theta);
 			y = r * Math.sin(theta);
 			setMACRO.add(new Point2D.Double(x, y));
-			picoFixedGenerator(x, y, radiusMacro, picoCount);
+			picoFixedGenerator(x, y, radiusMacro, picoCount, i);
 			ueGenerator(x, y, i);
 			expectedResourceBlocksRequired += resourceBlocksRequired;
 		}
 	}
 	
-	public void picoFixedGenerator(double x, double y, int radiusMacro, int picoCount)
+	public void picoFixedGenerator(double x, double y, int radiusMacro, int picoCount, int macroIndex)
 	{
 		double xCo, yCo;
 		double distance, angle;
@@ -149,6 +151,7 @@ public class Point2DGenerator {
 				}
 			}
 			setFEMTO.add(new Point2D.Double(xCo, yCo));
+			pcToMC.add(macroIndex);
 		}
 	}
 	
@@ -160,7 +163,7 @@ public class Point2DGenerator {
 		Point2D[] arrFEMTO = setFEMTO.toArray(new Point2D[setFEMTO.size()]); 
 		resourceBlocksRequired = 0;
 		
-		for(i = 1; i <= this.ueCount; i++)
+		for(i = 1; i <= Point2DGenerator.ueCount; i++)
 		{
 			if(random.nextDouble() < (this.hotSpotProb))
 				hotspotUECount++;
@@ -184,6 +187,8 @@ public class Point2DGenerator {
 					ueDataDemands.add(VIDEO);
 					resourceBlocksRequired += VIDEORB;
 				}
+			
+			ueToMC.add(macroIndex);
 		}
 		
 		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount + ", Resource Blocks: " + resourceBlocksRequired);
@@ -244,20 +249,32 @@ public class Point2DGenerator {
 		else 
 			if(stationType == STATIONPICO)
 			{
-				for (Point2D point : points) {
+				/*for (Point2D point : points) {
 					out.printf("%6.4f %6.4f%n", point.getX(), point.getY());
+				}*/
+				
+				Iterator<Point2D> itrPico= points.iterator();
+				Iterator<Integer> itrPCToMC = pcToMC.iterator();
+				
+				while(itrPico.hasNext() && itrPCToMC.hasNext())
+				{
+					Point2D point = itrPico.next();
+					int macroIndex = ((Integer)itrPCToMC.next()).intValue();
+					out.printf("%6.4f %6.4f %d%n", point.getX(), point.getY(), macroIndex);
 				}
 			}
 			else
 			{
-				Iterator<Point2D> itrMacro= points.iterator();
+				Iterator<Point2D> itrUE= points.iterator();
 				Iterator<Integer> itrUEDemand = ueDataDemands.iterator();
+				Iterator<Integer> itrUEToMC = ueToMC.iterator();
 				
-				while(itrMacro.hasNext() && itrUEDemand.hasNext())
+				while(itrUE.hasNext() && itrUEDemand.hasNext() && itrUEToMC.hasNext())
 				{
-					Point2D point = itrMacro.next();
+					Point2D point = itrUE.next();
 					int ueDataDemand = ((Integer)itrUEDemand.next()).intValue();
-					out.printf("%6.4f %6.4f %d%n", point.getX(), point.getY(), ueDataDemand);
+					int macroIndex = ((Integer)itrUEToMC.next()).intValue();
+					out.printf("%6.4f %6.4f %d %d%n", point.getX(), point.getY(), ueDataDemand, macroIndex);
 				}
 			}
 		out.close();

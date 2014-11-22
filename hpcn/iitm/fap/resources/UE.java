@@ -18,6 +18,8 @@ public class UE {
 	private TargetBsDTO target;
 	// ueType = MUE, FUE, out of range & can not communicate.
 	private int ueType;
+	private int dataRate;
+	private int macroIndex;
 	private boolean ueVictim;
 	private boolean sorted;
 	private double sinrMacroDB;
@@ -40,7 +42,36 @@ public class UE {
 		fapSet = new HashSet<Integer>();
 		fapList = new ArrayList<TargetBsDTO>();
 	}
+	
+	public UE(int id, Point2D location, int dataRate, int macroIndex) {
+		this.id = id;
+		this.location = location;
+		this.ueType = Params.OUT_OF_RANGE;
+		this.ueVictim = false;
+		this.sorted = false;
+		this.dataRate = dataRate;
+		this.macroIndex = macroIndex;
 
+		fapSet = new HashSet<Integer>();
+		fapList = new ArrayList<TargetBsDTO>();
+	}
+
+	public int getDataRate() {
+		return dataRate;
+	}
+	
+	public void setDataRate(int dataRate) {
+		this.dataRate = dataRate;
+	}
+	
+	public int getMacroIndex() {
+		return macroIndex;
+	}
+	
+	public void setMacroIndex(int macroIndex) {
+		this.macroIndex = macroIndex;
+	}
+	
 	public double getBitRate() {
 		return bitRate;
 	}

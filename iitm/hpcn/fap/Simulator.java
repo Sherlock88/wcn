@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 public class Simulator {
-
 	private Set<UE> setUE = new HashSet<UE>();
 	private ArrayList<UE> listUE = new ArrayList<UE>();
 	private ArrayList<UE> listMUE = new ArrayList<UE>();
@@ -27,6 +27,7 @@ public class Simulator {
 	private Set<UE> associatedMacroUE = new HashSet<UE>();
 	private int macroVictimCount = 0;
 	private int associationType = 0;
+	private int macroIndex = 0;
 	private double ee = 0;
 	private double capacity = 0;
 	private double capacityMV = 0;
@@ -38,14 +39,16 @@ public class Simulator {
 	private double capacity5PerFV = 0;
 	private double capacity5PerAllVictim = 0;
 	
+	// Station types
+	public static final int STATIONMACRO = 0;
+	public static final int STATIONPICO = 1;
+	public static final int STATIONUE = 2;
+		
 	private SummaryStatistics bitRateMV = new SummaryStatistics();
 	private SummaryStatistics bitRateFV = new SummaryStatistics();
 	private SummaryStatistics bitRateMA = new SummaryStatistics();
 	private SummaryStatistics bitRateFA = new SummaryStatistics();
 	
-	// TODO : implement an resource allocation algorithm
-	//public double sumThroughput = 0.0;
-
 	private ArrayList<Double> sinrListM;
 	private ArrayList<Double> macroVictimSinr;
 	//private ArrayList<Double> sinrListM_IF;
@@ -61,39 +64,48 @@ public class Simulator {
 	private ArrayList<Double> bitRateListFV;
 	private ArrayList<Double> bitRateListAll;
 	private ArrayList<Double> bitRateListAllVictim;
-	
 	private ArrayList<Double> bitRateList5PerMV;
 	private ArrayList<Double> bitRateList5PerFV;
 	private ArrayList<Double> bitRateList5PerAllVictim;
-	
 	private ArrayList<Double> sinrAll;
 	private ArrayList<Double> sinrAllVictim;
 	private double fairnessIndexAll;
-
 	private double fairnessIndexAllVictim;
-	
 	private double alphaM;
 	private double alphaP;
 
-
 	boolean ABSmode;
 
-	public void init(String UEFile, String FAPFile, int associationType) {
+	public void init(String UEFile, String FAPFile, int associationType)
+	{
+		init(UEFile, FAPFile, associationType, macroIndex);
+	}
+	
+	public void init(String UEFile, String FAPFile, int associationType, int macroIndex) {
 		this.ABSmode = false;
+		this.macroIndex = macroIndex;
 		this.associationType = associationType;
 		try {
-			int id = 0;
-			for (Point2D point : getInfo(UEFile)) {
-				setUE.add(new UE(id++, point));
-			}
-			id = 0;
-			for (Point2D point : getInfo(FAPFile)) {
-				setFAP.add(new FAP(id++, point));
-			}
+			getInfo(UEFile, STATIONUE);
+			getInfo(FAPFile, STATIONPICO);
 			listUE.addAll(setUE);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void runSim() {
+		warmUpUe();
+		associateUEs();
+		setVictimStatus();
+		//calculateSinrRange();	//to check the SINR ranges at various distances
+		makeSINRList();
+		calculateDataRates();
+		makeBitrateList();
+		//sortUEperBitRate();
+		makePercentileBitrateList();
+		makeSummaryStatistics();
+		System.out.println("MUE#: " + associatedMacroUE.size());
 	}
 	
 	public void init_2(String ABSFile)
@@ -120,20 +132,6 @@ public class Simulator {
 		//sortUEperBitRate();
 		makePercentileBitrateList();
 		makeSummaryStatistics();
-	}
-
-	public void runSim() {
-		warmUpUe();
-		associateUEs();
-		setVictimStatus();
-		//calculateSinrRange();	//to check the SINR ranges at various distances
-		makeSINRList();
-		calculateDataRates();
-		makeBitrateList();
-		//sortUEperBitRate();
-		makePercentileBitrateList();
-		makeSummaryStatistics();
-		System.out.println("MUE: " + associatedMacroUE.size());
 	}
 
 	public void calculateSinrRange() {
@@ -241,8 +239,8 @@ public class Simulator {
 		if (associationType == 5)
 			for (UE ue : setUE)
 				ue.calcDataRateABS2(getMacroUeCount(), getMacroVictimCount());
-		else
-			System.err.println("ERROR: Unexpected Association Type");
+		//else
+			//System.err.println("ERROR: Unexpected Association Type");
 	}
 	
 	private void sortUEperBitRate()
@@ -257,7 +255,6 @@ public class Simulator {
 			else
 				System.err.println("Error: UE is out of range");
 		
-		//TODO Following code may not be required
 		Collections.sort(listMUE, new MaxBitRate());
 		Collections.sort(listFUE, new MaxBitRate());
 	}
@@ -400,8 +397,8 @@ public class Simulator {
 		//	sumSqAllVictimThroughput += (d*d);
 		//}
 		
-		double bsEnergy = 250 + associatedMacroUE.size()*5;	//raj - what does it mean?
-		double fapEnergy = (setFAP.size() - idleFemtoCount())*10;
+		double bsEnergy = 250 + associatedMacroUE.size() * 5;	//raj - what does it mean?
+		double fapEnergy = (setFAP.size() - idleFemtoCount()) * 10;
 		
 		sumEnergy = bsEnergy + fapEnergy;
 		
@@ -603,18 +600,38 @@ public class Simulator {
 		return associatedMacroUE.size();
 	}
 
-	static Set<Point2D> getInfo(String filename) throws FileNotFoundException {
-		Set<Point2D> set = new HashSet<Point2D>();
+	private void getInfo(String filename, int stationType) throws FileNotFoundException {
 		Scanner fileScanner = new Scanner(new File(filename));
-		while (fileScanner.hasNextDouble()) {
-			double x = fileScanner.nextDouble();
-			double y = fileScanner.nextDouble();
-			Point2D point = new Point2D.Double(x, y);
-
-			set.add(point);
+		double x, y;
+		int macroIndex, dataRate, id = 0;
+		
+		while (fileScanner.hasNextLine()) {
+			try
+			{
+				x = fileScanner.nextDouble();
+				y = fileScanner.nextDouble();
+				Point2D point = new Point2D.Double(x, y);
+				if(stationType == STATIONUE)
+				{
+					dataRate = fileScanner.nextInt();
+					macroIndex = fileScanner.nextInt();
+					if(macroIndex == this.macroIndex)
+						setUE.add(new UE(id++, point, dataRate, macroIndex));
+				}
+				else
+					if(stationType == STATIONPICO)
+					{
+						macroIndex = fileScanner.nextInt();
+						if(macroIndex == this.macroIndex)
+							setFAP.add(new FAP(id++, point, macroIndex));
+					}
+			}
+			catch (NoSuchElementException nse)
+			{
+			}
 		}
 		fileScanner.close();
-		return set;
+		//return set;
 	}
 
 	public ArrayList<Double> getSinrListM() {

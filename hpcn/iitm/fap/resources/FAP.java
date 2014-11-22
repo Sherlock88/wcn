@@ -13,6 +13,7 @@ public class FAP {
 	private int fapVictimCount;
 	private Point2D location;
 	private double bias;
+	private int macroIndex;
 	public Set<UE> associatedUE = new HashSet<UE>();
 	
 	public FAP(int id, Point2D location) {
@@ -22,7 +23,25 @@ public class FAP {
 		this.location = location;
 		this.bias = Main.BIAS;
 	}
+	
+	public FAP(int id, Point2D location, int macroIndex) {
+		super();
+		this.id = id;
+		fapVictimCount = 0;
+		this.location = location;
+		this.bias = Main.BIAS;
+		this.macroIndex = macroIndex;
+	}
 
+	public int getMacroIndex() {
+		return macroIndex;
+	}
+	
+	public void setMacroIndex(int macroIndex) {
+		this.macroIndex = macroIndex;
+	}
+	
+	
 	public double getBias()
 	{
 		return bias;
