@@ -17,8 +17,8 @@ public class Main {
 	
 	public static void main(String[] args) throws Exception {
 
-		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 2 0.1 6.0".split(" ");
-		RUNS = Integer.parseInt(args[3]);
+		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 MACRO-Dist-600-2000 2 0.1 6.0".split(" ");
+		RUNS = Integer.parseInt(args[4]);
 		//ALPHA = Double.parseDouble(args[4]);
 		//BIAS = Double.parseDouble(args[5]);
 
@@ -170,7 +170,7 @@ public class Main {
 					for(int j = 0; j <= 6; j++)
 					{
 						Simulator scenario = new Simulator();
-						scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, runType, j);
+						scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, args[0] + args[3] + "-" + i, runType, j);
 						scenario.runSim();
 	
 						if(runType == 5)

@@ -74,17 +74,17 @@ public class Simulator {
 
 	boolean ABSmode;
 
-	public void init(String UEFile, String FAPFile, int associationType)
+	public void init(String UEFile, String FAPFile, String MAPFile, int associationType)
 	{
-		init(UEFile, FAPFile, associationType, macroIndex);
+		init(UEFile, FAPFile, MAPFile, associationType, macroIndex);
 	}
 	
-	public void init(String UEFile, String FAPFile, int associationType, int macroIndex) {
+	public void init(String UEFile, String FAPFile, String MAPFile, int associationType, int macroIndex) {
 		this.ABSmode = false;
 		this.macroIndex = macroIndex;
 		this.associationType = associationType;
 		try {
-			getInfo(FAPFile, Params.STATIONMACRO);
+			getInfo(MAPFile, Params.STATIONMACRO);
 			getInfo(FAPFile, Params.STATIONPICO);
 			getInfo(UEFile, Params.STATIONUE);
 			listUE.addAll(setUE);
@@ -99,7 +99,7 @@ public class Simulator {
 		setVictimStatus();
 		
 		int picoCount = setFAP.size();
-		System.out.println("\nMacroID: " + macroIndex + ", Pico#: " + picoCount + ", MUE#: " + associatedMacroUE.size() + ", PUE#: " + picoUECount + ", MVUE#: " + macroVictimCount);
+		System.out.println("\nMacroID: " + macroIndex + ", Pico#: " + picoCount + ", MUE#: " + associatedMacroUE.size() + ", PUE#: " + picoUECount + ", MVUE#: " + macroVictimCount + ", MacroLocation: " + "(" + listMAP.get(macroIndex).getLocation().getX() + "," + listMAP.get(macroIndex).getLocation().getY() + ")");
 		for (FAP fap : setFAP) {
 			System.out.println("PicoID : " + fap.getId() + ", PUE#: " + fap.getUECount() + ", PVUE#: " + fap.getFapVictimCount());
 		}

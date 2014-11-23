@@ -65,7 +65,7 @@ public class Point2DGenerator {
 		totalPicoCount = 0;
 		random = new Random(System.currentTimeMillis());
 		Point2DGenerator.ueCount = (int) Math.ceil(ueDensity *  Math.PI * (radiusM/1000.0) * (radiusM/1000.0));
-		ueCount = 60;
+		ueCount = Params.USERS_PER_MACRO;
 	}
 	
 	public static void main(String[] args) {
