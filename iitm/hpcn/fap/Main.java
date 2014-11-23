@@ -167,7 +167,7 @@ public class Main {
 				for(int i = 1; i <= RUNS; i++)
 				{
 					System.out.println("\nScenario: " + i + "\n-------------");
-					for(int j = 1; j <= 6; j++)
+					for(int j = 0; j <= 6; j++)
 					{
 						Simulator scenario = new Simulator();
 						scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, runType, j);
@@ -220,6 +220,7 @@ public class Main {
 					}
 				}
 
+				
 				macroSinrCDF.saveToFile();
 				macroVictimSinrCDF.saveToFile();
 				//macroSinrILCDF.saveToFile();

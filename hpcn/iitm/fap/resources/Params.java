@@ -12,8 +12,8 @@ public interface Params {
 	public static final int SCs_FOR_20_MHz = 100;
 	
 	//Transmitted power should be 46dbm for 10MHz bandwidth
-	public static final double MACRO_POWER = 39.8/SCs_FOR_10_MHz;	// 46 dbm for 10MHz, 43 dbm for <=5MHz
-	public static final double FAP_POWER = 1.0/SCs_FOR_10_MHz;		// 30 dbm [PICO]
+	public static final double MACRO_POWER = 43/SCs_FOR_5_MHz;	// 46 dbm for 10MHz, 43 dbm for <=5MHz
+	public static final double FAP_POWER = 1.0/SCs_FOR_5_MHz;		// 30 dbm [PICO]
 
 	public static final double MIN_SINR_TH_DB = -10.0;
 	public static final double EXT_WALL_LOSS_DB = 20;  				
@@ -22,7 +22,7 @@ public interface Params {
 	public static final double ANTENNAGAIN_MACRO_DBI = 0;// 15
 	public static final double NOISE_DB = -144.0;// or -97.5;
 	public static final double MIN_RSRP_TH_DB = -135.0; 
-	public static final double BANDWIDTH = 10000;	//In kHz  // 10MHz
+	public static final double BANDWIDTH = 5000;	//In kHz  // 5MHz
 	public static final double SUBCHANNEL_BANDWIDTH = 200;	//iN kHz
 	
 	public static final double BSCHANNELWATT = 5;

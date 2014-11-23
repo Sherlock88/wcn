@@ -43,6 +43,7 @@ public class CDFHelper {
 			cdfProb[i] += prob/cdfSize;
 		}
 	}
+	
 	public void saveToFile()
 	{
 		if(runs==0)

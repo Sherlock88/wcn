@@ -65,7 +65,7 @@ public class Point2DGenerator {
 		totalPicoCount = 0;
 		random = new Random(System.currentTimeMillis());
 		Point2DGenerator.ueCount = (int) Math.ceil(ueDensity *  Math.PI * (radiusM/1000.0) * (radiusM/1000.0));
-		ueCount = 50;
+		ueCount = 60;
 	}
 	
 	public static void main(String[] args) {
@@ -99,7 +99,7 @@ public class Point2DGenerator {
 		int i, r = 2 * radiusMacro;
 		double theta = 0;
 		++scenarioCount;
-		System.out.println("---------------------------\nScenario instance : " + scenarioCount);
+		System.out.println("---------------------------\nScenario: " + scenarioCount);
 
 		// Generate a Macrocell at the center and six Macrocells surrounding it
 		
@@ -191,11 +191,9 @@ public class Point2DGenerator {
 			ueToMC.add(macroIndex);
 		}
 		
-		System.out.println("Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount + ", Resource Blocks: " + resourceBlocksRequired);
 		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0, STATIONMACRO);
-		
 		intPico = (Integer) picoPerMacro.get(macroIndex);
-		System.out.println("Pico/Macro: " + intPico);
+		System.out.println("Macrocell " + macroIndex + ": Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount + ", Resource Blocks: " + resourceBlocksRequired + ", Pico/Macro: " + intPico);
 		for(i = totalPicoCount - intPico.intValue(); i < totalPicoCount; i++)
 			getPoints(arrFEMTO[i].getX(), arrFEMTO[i].getY(), radiusPico, hotspotUECount / intPico, 0, 0, STATIONPICO);
 	}

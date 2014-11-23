@@ -26,6 +26,7 @@ public class Simulator {
 	private Set<FAP> setFAP = new HashSet<FAP>();
 	private Set<UE> associatedMacroUE = new HashSet<UE>();
 	private int macroVictimCount = 0;
+	private int picoUECount = setFAP.size();
 	private int associationType = 0;
 	private int macroIndex = 0;
 	private double ee = 0;
@@ -98,6 +99,13 @@ public class Simulator {
 		warmUpUe();
 		associateUEs();
 		setVictimStatus();
+		
+		int picoCount = setFAP.size();
+		System.out.println("\nMacroID: " + macroIndex + ", Pico#: " + picoCount + ", MUE#: " + associatedMacroUE.size() + ", PUE#: " + picoUECount + ", MVUE#: " + macroVictimCount);
+		for (FAP fap : setFAP) {
+			System.out.println("PicoID : " + fap.getId() + ", PUE#: " + fap.getUECount() + ", PVUE#: " + fap.getFapVictimCount());
+		}
+		
 		//calculateSinrRange();	//to check the SINR ranges at various distances
 		makeSINRList();
 		calculateDataRates();
@@ -105,7 +113,6 @@ public class Simulator {
 		//sortUEperBitRate();
 		makePercentileBitrateList();
 		makeSummaryStatistics();
-		System.out.println("MUE#: " + associatedMacroUE.size());
 	}
 	
 	public void init_2(String ABSFile)
@@ -217,6 +224,8 @@ public class Simulator {
 	}
 
 	public void associateUEs() {
+		picoUECount = 0;
+		
 		for (UE ue : setUE) {
 			FAP target = null;
 
@@ -226,7 +235,12 @@ public class Simulator {
 				System.err.println("ERROR :: unknown association tech all associated to macro bs");
 
 			if (target != null)
-				target.addUE(ue);
+			{
+				picoUECount++; 
+				for(FAP fap: setFAP)
+					if(fap.getId() == target.getId())
+						fap.addUE(ue);
+			}
 			else
 				associatedMacroUE.add(ue);
 		}
@@ -236,11 +250,12 @@ public class Simulator {
 		if(associationType == 1)
 			for (UE ue : setUE)
 				ue.calcDataRateRSRP(getMacroUeCount(), getMacroVictimCount());
-		if (associationType == 5)
-			for (UE ue : setUE)
-				ue.calcDataRateABS2(getMacroUeCount(), getMacroVictimCount());
-		//else
-			//System.err.println("ERROR: Unexpected Association Type");
+		else
+			if (associationType == 5)
+				for (UE ue : setUE)
+					ue.calcDataRateABS2(getMacroUeCount(), getMacroVictimCount());
+			else
+				System.err.println("ERROR: Unexpected Association Type");
 	}
 	
 	private void sortUEperBitRate()
@@ -611,19 +626,20 @@ public class Simulator {
 				x = fileScanner.nextDouble();
 				y = fileScanner.nextDouble();
 				Point2D point = new Point2D.Double(x, y);
-				if(stationType == STATIONUE)
+				
+				if(stationType == STATIONPICO)
 				{
-					dataRate = fileScanner.nextInt();
 					macroIndex = fileScanner.nextInt();
 					if(macroIndex == this.macroIndex)
-						setUE.add(new UE(id++, point, dataRate, macroIndex));
+						setFAP.add(new FAP(id++, point, macroIndex));
 				}
 				else
-					if(stationType == STATIONPICO)
+					if(stationType == STATIONUE)
 					{
+						dataRate = fileScanner.nextInt();
 						macroIndex = fileScanner.nextInt();
 						if(macroIndex == this.macroIndex)
-							setFAP.add(new FAP(id++, point, macroIndex));
+							setUE.add(new UE(id++, point, dataRate, macroIndex));
 					}
 			}
 			catch (NoSuchElementException nse)

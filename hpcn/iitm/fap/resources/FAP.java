@@ -14,7 +14,7 @@ public class FAP {
 	private Point2D location;
 	private double bias;
 	private int macroIndex;
-	public Set<UE> associatedUE = new HashSet<UE>();
+	public Set<UE> associatedPicoUE = new HashSet<UE>();
 	
 	public FAP(int id, Point2D location) {
 		super();
@@ -61,15 +61,15 @@ public class FAP {
 	}
 
 	public void addUE(UE ue) {
-			associatedUE.add(ue);
+			associatedPicoUE.add(ue);
 	}
 
 	public void removeAllUE() {
-		associatedUE.clear();
+		associatedPicoUE.clear();
 	}
 
 	public void printUE() {
-		System.out.println(this + "\t: " + associatedUE.size() + "\t: " + associatedUE);
+		System.out.println(this + "\t: " + associatedPicoUE.size() + "\t: " + associatedPicoUE);
 	}
 
 	@Override
@@ -78,17 +78,17 @@ public class FAP {
 	}
 
 	public int getUECount() {
-		return associatedUE.size();
+		return associatedPicoUE.size();
 	}
 	
 	public Set<UE> getAssociatedUE() {
-		return associatedUE;
+		return associatedPicoUE;
 	}
 	
 	public void setVictimUeStatus()
 	{
 		int victimCount = 0;
-		for(UE ue : associatedUE) {
+		for(UE ue : associatedPicoUE) {
 			if(ue.getSINRILdb() < Params.MIN_SINR_TH_DB) {
 				ue.setUeVictim(true);
 				victimCount++;
