@@ -12,6 +12,7 @@
 
 package iitm.hpcn.generator;
 
+import hpcn.iitm.fap.resources.Params;
 import java.io.FileNotFoundException;
 import java.util.LinkedHashSet;
 import java.awt.geom.Point2D;
@@ -31,7 +32,6 @@ public class Point2DGenerator {
 	private static Vector<Integer> ueDataDemands = new Vector<Integer>();
 	private static Vector<Integer> ueToMC = new Vector<Integer>();
 	private static Vector<Integer> pcToMC = new Vector<Integer>();
-	private final int MBSToPBS = 75, PBSToPBS = 40, MBSToUE = 35, PBSToUE = 10;
 	Random random;
 	
 	// Station types
@@ -71,9 +71,9 @@ public class Point2DGenerator {
 	public static void main(String[] args) {
 		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 MACRO-Dist-600-2000 2 400".split(" ");	//400 UE per km-sq
 		N_SCENARIOS = Integer.parseInt(args[4]);
-		int radiusM = 600;
-		int radiusP = 200;
-		int n_pico = 5;
+		int radiusM = Params.MACRO_RADIUS;
+		int radiusP = Params.PICO_RADIUS;
+		int n_pico = Params.MAX_PICO_COUNT;
 		double density = Double.parseDouble(args[5]);
 		femtoClusterGenerator(radiusM, radiusP, n_pico, density, args[0], args[1], args[2], args[3]);
 	}
@@ -134,7 +134,7 @@ public class Point2DGenerator {
 		for(int i = 0; i < picoCount; i++)
 		{
 			// Generating Picocell at a distance >= MBSToPBS from the Macrocell it's attached to
-			distance = MBSToPBS + random.nextDouble() * (radiusMacro - MBSToPBS);
+			distance = Params.MBSToPBS + random.nextDouble() * (radiusMacro - Params.MBSToPBS);
 			angle = (2 * Math.PI) * random.nextDouble();
 			xCo = x + distance * Math.cos(angle);
 			yCo = y + distance * Math.sin(angle);
@@ -144,7 +144,7 @@ public class Point2DGenerator {
 			while(itrPico.hasNext())
 			{
 				Point2D curPico = itrPico.next();
-				if(Point2D.distance(xCo, yCo, curPico.getX(), curPico.getY()) < PBSToPBS)
+				if(Point2D.distance(xCo, yCo, curPico.getX(), curPico.getY()) < Params.PBSToPBS)
 				{
 					i--;
 					continue genPico;
@@ -207,9 +207,9 @@ public class Point2DGenerator {
 		for (int i = 0; i < c; i++) {
 			
 			if(stationType == STATIONMACRO)
-				d = MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
+				d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
 			else
-				d = PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
+				d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
 
 			double theta = 2 * Math.PI * random.nextDouble();
 			double x = X + d * Math.cos(theta);

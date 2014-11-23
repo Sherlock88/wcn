@@ -1,7 +1,19 @@
 package hpcn.iitm.fap.resources;
 
 public interface Params {
-	//resource blocks 	
+	
+	// Scenario constants
+	public static final int MACRO_RADIUS = 250;
+	public static final int PICO_RADIUS = 35;
+	public static final int MAX_PICO_COUNT = 5;
+	public static final int A = 29;
+	public static final int B = 7;
+	public static final int MBSToPBS = 75;
+	public static final int PBSToPBS = 40;
+	public static final int MBSToUE = 35;
+	public static final int PBSToUE = 10;
+	
+	// Resource blocks 	
 	public static final int NO_OF_CHANNELS = 256;	
 
 	public static final int SCs_FOR_1_4_MHz = 6;

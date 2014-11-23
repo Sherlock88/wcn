@@ -89,12 +89,20 @@ public class FAP {
 	{
 		int victimCount = 0;
 		for(UE ue : associatedPicoUE) {
-			if(ue.getSINRILdb() < Params.MIN_SINR_TH_DB) {
+			/*if(ue.getSINRILdb() < Params.MIN_SINR_TH_DB) {
+				ue.setUeVictim(true);
+				victimCount++;
+			}
+			else
+				ue.setUeVictim(false);*/
+			double distance = location.distance(ue.getLocation());
+			if((Params.PICO_RADIUS - distance) <= Params.B) {
 				ue.setUeVictim(true);
 				victimCount++;
 			}
 			else
 				ue.setUeVictim(false);
+			
 		}
 		setFapVictimCount(victimCount);
 	}
