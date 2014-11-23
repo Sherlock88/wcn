@@ -48,7 +48,8 @@ public class CDFHelper {
 	{
 		if(runs==0)
 		{
-			System.err.println("ERROR : Nothing to write.");
+			if(Params.SHOW_ERROR)
+				System.err.println("ERROR : Nothing to write.");
 			return;
 		}
 		try

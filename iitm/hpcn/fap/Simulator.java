@@ -1,6 +1,7 @@
 package iitm.hpcn.fap;
 
 import hpcn.iitm.fap.resources.FAP;
+import hpcn.iitm.fap.resources.MAP;
 import hpcn.iitm.fap.resources.UE;
 import hpcn.iitm.fap.resources.Params;
 
@@ -23,6 +24,7 @@ public class Simulator {
 	private ArrayList<UE> listUE = new ArrayList<UE>();
 	private ArrayList<UE> listMUE = new ArrayList<UE>();
 	private ArrayList<UE> listFUE = new ArrayList<UE>();
+	private ArrayList<MAP> listMAP = new ArrayList<MAP>();
 	private Set<FAP> setFAP = new HashSet<FAP>();
 	private Set<UE> associatedMacroUE = new HashSet<UE>();
 	private int macroVictimCount = 0;
@@ -39,11 +41,6 @@ public class Simulator {
 	private double capacity5PerMV = 0;
 	private double capacity5PerFV = 0;
 	private double capacity5PerAllVictim = 0;
-	
-	// Station types
-	public static final int STATIONMACRO = 0;
-	public static final int STATIONPICO = 1;
-	public static final int STATIONUE = 2;
 		
 	private SummaryStatistics bitRateMV = new SummaryStatistics();
 	private SummaryStatistics bitRateFV = new SummaryStatistics();
@@ -87,8 +84,9 @@ public class Simulator {
 		this.macroIndex = macroIndex;
 		this.associationType = associationType;
 		try {
-			getInfo(UEFile, STATIONUE);
-			getInfo(FAPFile, STATIONPICO);
+			getInfo(FAPFile, Params.STATIONMACRO);
+			getInfo(FAPFile, Params.STATIONPICO);
+			getInfo(UEFile, Params.STATIONUE);
 			listUE.addAll(setUE);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -232,7 +230,8 @@ public class Simulator {
 			if (associationType == Params.MAXRSRP || associationType == Params.COMBINEDABS)
 				target = ue.maxRsrp();	// For combined ABS calculation, association criteria is assumed to be RSRP based
 			else
-				System.err.println("ERROR :: unknown association tech all associated to macro bs");
+				if(Params.SHOW_ERROR)
+					System.err.println("ERROR :: unknown association tech all associated to macro bs");
 
 			if (target != null)
 			{
@@ -255,7 +254,8 @@ public class Simulator {
 				for (UE ue : setUE)
 					ue.calcDataRateABS2(getMacroUeCount(), getMacroVictimCount());
 			else
-				System.err.println("ERROR: Unexpected Association Type");
+				if(Params.SHOW_ERROR)
+					System.err.println("ERROR: Unexpected Association Type");
 	}
 	
 	private void sortUEperBitRate()
@@ -268,7 +268,8 @@ public class Simulator {
 			else if(ue.getUeType() == Params.FUE)
 				listFUE.add(ue);
 			else
-				System.err.println("Error: UE is out of range");
+				if(Params.SHOW_ERROR)
+					System.err.println("Error: UE is out of range");
 		
 		Collections.sort(listMUE, new MaxBitRate());
 		Collections.sort(listFUE, new MaxBitRate());
@@ -365,9 +366,8 @@ public class Simulator {
 				}
 			}
 			else
-			{
-				System.err.println("ERROR :: UE is out of range SINR value unreliable.");
-			}
+				if(Params.SHOW_ERROR)
+					System.err.println("ERROR :: UE is out of range SINR value unreliable.");
 		}
 		
 		double sumThroughput = 0;
@@ -589,15 +589,38 @@ public class Simulator {
 
 	public void setVictimStatus() {
 		int victimCount = 0;
-		for (UE ue : associatedMacroUE) {
+		Point2D macroLocation = listMAP.get(macroIndex).getLocation();
+		/*for (UE ue : associatedMacroUE) {
 			if (ue.getSinrMacroDB_IL() < Params.MIN_SINR_TH_DB) { //TODO WCN PROJECTs
 				ue.setUeVictim(true);
 				victimCount++;
 			} else {
 				ue.setUeVictim(false);
 			}
+		}*/
+		
+		// Set MVUE count
+		for (UE ue : associatedMacroUE) {
+			for(FAP fap: setFAP) {
+				Point2D picoLocation = fap.getLocation();
+				double distPicoToMacro = macroLocation.distance(picoLocation);
+				distPicoToMacro -= Params.PICO_RADIUS;
+				double maxDist = Params.PICO_RADIUS + distPicoToMacro * 0.2;
+				double distPicoToUE = picoLocation.distance(ue.getLocation());
+				
+				if ((distPicoToUE >= Params.PICO_RADIUS) && (distPicoToUE <= maxDist)) {
+					ue.setUeVictim(true);
+					victimCount++;
+					break;
+				} else {
+					ue.setUeVictim(false);
+				}
+			}
 		}
+		
 		setMacroVictimCount(victimCount);
+		
+		// Set PVUE count
 		for (FAP fap : setFAP) {
 			fap.setVictimUeStatus();
 		}
@@ -618,7 +641,7 @@ public class Simulator {
 	private void getInfo(String filename, int stationType) throws FileNotFoundException {
 		Scanner fileScanner = new Scanner(new File(filename));
 		double x, y;
-		int macroIndex, dataRate, id = 0;
+		int macroIndex, dataRate, picoCount, id = 0;
 		
 		while (fileScanner.hasNextLine()) {
 			try
@@ -627,27 +650,32 @@ public class Simulator {
 				y = fileScanner.nextDouble();
 				Point2D point = new Point2D.Double(x, y);
 				
-				if(stationType == STATIONPICO)
+				if(stationType == Params.STATIONMACRO)
 				{
-					macroIndex = fileScanner.nextInt();
-					if(macroIndex == this.macroIndex)
-						setFAP.add(new FAP(id++, point, macroIndex));
+					picoCount = fileScanner.nextInt();
+					listMAP.add(new MAP(id++, picoCount, point));
 				}
 				else
-					if(stationType == STATIONUE)
+					if(stationType == Params.STATIONPICO)
 					{
-						dataRate = fileScanner.nextInt();
 						macroIndex = fileScanner.nextInt();
 						if(macroIndex == this.macroIndex)
-							setUE.add(new UE(id++, point, dataRate, macroIndex));
+							setFAP.add(new FAP(id++, point, macroIndex));
 					}
+					else
+						if(stationType == Params.STATIONUE)
+						{
+							dataRate = fileScanner.nextInt();
+							macroIndex = fileScanner.nextInt();
+							if(macroIndex == this.macroIndex)
+								setUE.add(new UE(id++, point, dataRate, macroIndex));
+						}
 			}
 			catch (NoSuchElementException nse)
 			{
 			}
 		}
 		fileScanner.close();
-		//return set;
 	}
 
 	public ArrayList<Double> getSinrListM() {

@@ -2,6 +2,9 @@ package hpcn.iitm.fap.resources;
 
 public interface Params {
 	
+	// Project-wise flags
+	public static final boolean SHOW_ERROR = true;
+	
 	// Scenario constants
 	public static final int MACRO_RADIUS = 250;
 	public static final int PICO_RADIUS = 35;
@@ -12,6 +15,12 @@ public interface Params {
 	public static final int PBSToPBS = 40;
 	public static final int MBSToUE = 35;
 	public static final int PBSToUE = 10;
+	
+
+	// Station types
+	public static final int STATIONMACRO = 0;
+	public static final int STATIONPICO = 1;
+	public static final int STATIONUE = 2;
 	
 	// Resource blocks 	
 	public static final int NO_OF_CHANNELS = 256;	

@@ -17,6 +17,7 @@ public class ABSDataRate {
 		
 		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 1000 0.1 6.0".split(" ");
 		RUNS = Integer.parseInt(args[3]);
+		RUNS = 2;
 
 		String outPath1 = "./outPut/";
 		
@@ -135,7 +136,7 @@ public class ABSDataRate {
 		
 		for(int i = 1; i <= RUNS; i++)
 		{
-			System.out.println("Scenario - " + i);
+			System.out.println("Scenario: " + i);
 			Simulator scenarioABS = new Simulator();
 			scenarioABS.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, runType);
 			scenarioABS.init_2("matlabData/Results/ABS_value_" + i);

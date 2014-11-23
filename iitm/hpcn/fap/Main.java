@@ -96,7 +96,7 @@ public class Main {
 				e.printStackTrace();
 			}
 			
-			mtlFileNameWriter.write("addpath('E:\\Rajkarn\\matlabData\\Code');\n");
+			mtlFileNameWriter.write("addpath('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Code');\n");
 			
 			eeWriter.append(ALPHA+"\t");
 			capacityWriter.append(ALPHA+"\t");
@@ -318,7 +318,7 @@ public class Main {
 	public static void writeMatlabCode(PrintWriter mtlCodeWriter, int i)
 	{
 		mtlCodeWriter.write("clc;\n");
-		mtlCodeWriter.write("addpath('E:\\Rajkarn\\matlabData\\Scenarios');\n");
+		mtlCodeWriter.write("addpath('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Scenarios');\n");
 		mtlCodeWriter.write("SCENARIO_" + i + "\n");
 		mtlCodeWriter.write("cvx_begin\n");
 		mtlCodeWriter.write("variables a;\n");
@@ -327,7 +327,7 @@ public class Main {
 		mtlCodeWriter.write("maximise c\nsubject to\n");
 		mtlCodeWriter.write("a>=0\nb>=0\na<1\nb<1\na+b<=1\n");
 		mtlCodeWriter.write("cvx_end\n");
-		mtlCodeWriter.write("results = fopen('E:\\Rajkarn\\matlabData\\Results\\ABS_value_" + i + "', 'w');\n");
+		mtlCodeWriter.write("results = fopen('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Results\\ABS_value_" + i + "', 'w');\n");
 		mtlCodeWriter.write("fprintf(results, '%d %d\\n', a, b);\n");
 		mtlCodeWriter.write("fclose(results);\n");
 	}
