@@ -207,9 +207,11 @@ public class Point2DGenerator {
 		for (int i = 0; i < c; i++) {
 			
 			if(stationType == STATIONMACRO)
-				d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
+				d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * Math.sqrt(random.nextDouble());
+				//d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * random.nextDouble();
 			else
-				d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter) * Math.sqrt(random.nextDouble());
+				d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.PBSToUE) * Math.sqrt(random.nextDouble());
+				//d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.PBSToUE) * random.nextDouble();
 
 			double theta = 2 * Math.PI * random.nextDouble();
 			double x = X + d * Math.cos(theta);
