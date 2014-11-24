@@ -159,7 +159,8 @@ public class Point2DGenerator {
 	{
 		Integer intPico;
 		int i, hotspotUECount = 0, uniformUECount = 0;
-		double probDataRate;
+		double probDataRate, xPico, yPico;
+		Point2D locMacro = new Point2D.Double(xMacro, yMacro), locPico;
 		Point2D[] arrFEMTO = setFEMTO.toArray(new Point2D[setFEMTO.size()]); 
 		resourceBlocksRequired = 0;
 		
@@ -195,7 +196,18 @@ public class Point2DGenerator {
 		intPico = (Integer) picoPerMacro.get(macroIndex);
 		System.out.println("Macrocell " + macroIndex + ": Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount + ", Resource Blocks: " + resourceBlocksRequired + ", Pico/Macro: " + intPico);
 		for(i = totalPicoCount - intPico.intValue(); i < totalPicoCount; i++)
-			getPoints(arrFEMTO[i].getX(), arrFEMTO[i].getY(), radiusPico, hotspotUECount / intPico, 0, 0, STATIONPICO);
+		{
+			xPico = arrFEMTO[i].getX();
+			yPico = arrFEMTO[i].getY();
+			locPico = new Point2D.Double(xPico,  yPico);
+			double distMBSToPBS = locMacro.distance(locPico);
+			distMBSToPBS -= radiusPico;
+			double A = distMBSToPBS * 0.2;
+			double hotspotMin = radiusPico - Params.B;
+			double hotspotMax = radiusPico + A;
+			double hostspotRadius = hotspotMin + (hotspotMax - hotspotMin) * random.nextDouble();
+			getPoints(xPico, yPico, hostspotRadius, hotspotUECount / intPico, 0, 0, STATIONPICO);
+		}
 	}
 	
 	// Center is at (X,Y) random radius will belong [restrictedZoneInner,R - restrictedZoneOuter] number of points c

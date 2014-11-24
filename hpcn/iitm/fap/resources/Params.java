@@ -13,7 +13,7 @@ public interface Params {
 	public static final int A = 29;
 	public static final int B = 7;
 	public static final int MBSToPBS = 75;
-	public static final int PBSToPBS = 40;
+	public static final int PBSToPBS = 80;
 	public static final int MBSToUE = 35;
 	public static final int PBSToUE = 10;
 	
