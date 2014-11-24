@@ -205,8 +205,9 @@ public class Point2DGenerator {
 			double A = distMBSToPBS * 0.2;
 			double hotspotMin = radiusPico - Params.B;
 			double hotspotMax = radiusPico + A;
-			double hostspotRadius = hotspotMin + (hotspotMax - hotspotMin) * random.nextDouble();
-			getPoints(xPico, yPico, hostspotRadius, hotspotUECount / intPico, 0, 0, STATIONPICO);
+			double hotspotRadius = hotspotMin + (hotspotMax - hotspotMin) * random.nextDouble();
+			System.out.println("MC: " + locMacro + ", PC: " + locPico + ", HPRadius: " + hotspotRadius);
+			getPoints(xPico, yPico, hotspotRadius, hotspotUECount / intPico, 0, 0, STATIONPICO);
 		}
 	}
 	
@@ -219,11 +220,11 @@ public class Point2DGenerator {
 		for (int i = 0; i < c; i++) {
 			
 			if(stationType == STATIONMACRO)
-				d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * Math.sqrt(random.nextDouble());
-				//d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * random.nextDouble();
+				//d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * Math.sqrt(random.nextDouble());
+				d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * random.nextDouble();
 			else
-				d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.PBSToUE) * Math.sqrt(random.nextDouble());
-				//d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.PBSToUE) * random.nextDouble();
+				//d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.PBSToUE) * Math.sqrt(random.nextDouble());
+				d = Params.PBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.PBSToUE) * random.nextDouble();
 
 			double theta = 2 * Math.PI * random.nextDouble();
 			double x = X + d * Math.cos(theta);

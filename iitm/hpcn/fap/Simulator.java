@@ -601,6 +601,7 @@ public class Simulator {
 		
 		// Set MVUE count
 		for (UE ue : associatedMacroUE) {
+			ue.setUeVictim(false);
 			for(FAP fap: setFAP) {
 				Point2D picoLocation = fap.getLocation();
 				double distPicoToMacro = macroLocation.distance(picoLocation);
@@ -612,8 +613,6 @@ public class Simulator {
 					ue.setUeVictim(true);
 					victimCount++;
 					break;
-				} else {
-					ue.setUeVictim(false);
 				}
 			}
 		}
