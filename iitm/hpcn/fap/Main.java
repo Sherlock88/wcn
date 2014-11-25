@@ -242,26 +242,26 @@ public class Main {
 				allSINRCDF.saveToFile();
 				allVictimSINRCDF.saveToFile();
 
-					eeWriter.append(runType+"\t"+energyEfficiency/RUNS+"\n");	//original format
-					capacityWriter.append(systemCapacity/RUNS+"\n");
-					capacityMWriter.append(systemCapacityM/RUNS+"\n");
-					capacityFWriter.append(systemCapacityF/RUNS+"\n");
-					capacityMVWriter.append(systemCapacityMV/RUNS+"\n");
-					capacityFVWriter.append(systemCapacityFV/RUNS+"\n");
-					capacityAllVictimWriter.append(systemCapacityAllVictim/RUNS+"\n");
-					capacityPerMVWriter.append(systemCapacityPerMV/RUNS+"\n");
-					capacityPerFVWriter.append(systemCapacityPerFV/RUNS+"\n");
-					capacityPerAllVictimWriter.append(systemCapacityPerAllVictim/RUNS+"\n");
-					fairnessWriter.append(fairnessIndex/RUNS+"\n");
-					
-					capacityMeanMV.append(meanCapacityMV/RUNS + "\n");
-					capacityMeanFV.append(meanCapacityFV/RUNS + "\n");
-					capacityMeanMA.append(meanCapacityMA/RUNS + "\n");
-					capacityMeanFA.append(meanCapacityFA/RUNS + "\n");
-					capacityStdMV.append(stdCapacityMV/RUNS + "\n");
-					capacityStdFV.append(stdCapacityFV/RUNS + "\n");
-					capacityStdMA.append(stdCapacityMA/RUNS + "\n");
-					capacityStdFA.append(stdCapacityFA/RUNS + "\n");
+				eeWriter.append(runType+"\t"+energyEfficiency/RUNS+"\n");	//original format
+				capacityWriter.append(systemCapacity/RUNS+"\n");
+				capacityMWriter.append(systemCapacityM/RUNS+"\n");
+				capacityFWriter.append(systemCapacityF/RUNS+"\n");
+				capacityMVWriter.append(systemCapacityMV/RUNS+"\n");
+				capacityFVWriter.append(systemCapacityFV/RUNS+"\n");
+				capacityAllVictimWriter.append(systemCapacityAllVictim/RUNS+"\n");
+				capacityPerMVWriter.append(systemCapacityPerMV/RUNS+"\n");
+				capacityPerFVWriter.append(systemCapacityPerFV/RUNS+"\n");
+				capacityPerAllVictimWriter.append(systemCapacityPerAllVictim/RUNS+"\n");
+				fairnessWriter.append(fairnessIndex/RUNS+"\n");
+				
+				capacityMeanMV.append(meanCapacityMV/RUNS + "\n");
+				capacityMeanFV.append(meanCapacityFV/RUNS + "\n");
+				capacityMeanMA.append(meanCapacityMA/RUNS + "\n");
+				capacityMeanFA.append(meanCapacityFA/RUNS + "\n");
+				capacityStdMV.append(stdCapacityMV/RUNS + "\n");
+				capacityStdFV.append(stdCapacityFV/RUNS + "\n");
+				capacityStdMA.append(stdCapacityMA/RUNS + "\n");
+				capacityStdFA.append(stdCapacityFA/RUNS + "\n");
 			}
 
 		mtlFileNameWriter.close();

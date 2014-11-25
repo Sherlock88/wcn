@@ -20,14 +20,13 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
-import java.util.Set;
 import java.io.File;
 
 public class Point2DGenerator {
 	public static int N_SCENARIOS, totalPicoCount, expectedResourceBlocksRequired = 0, ueCount;
 	private int radiusMacro, radiusPico, picoCount, scenarioCount, resourceBlocksRequired;
 	private double hotSpotProb = 2.0/3;			//Non-Uniform Distribution
-	private static Set<Point2D> setMACRO, setFEMTO, setUE;
+	private static LinkedHashSet<Point2D> setMACRO, setFEMTO, setUE;
 	private static Vector<Integer> picoPerMacro = new Vector<Integer>();
 	private static Vector<Integer> ueDataDemands = new Vector<Integer>();
 	private static Vector<Integer> ueToMC = new Vector<Integer>();
@@ -172,13 +171,13 @@ public class Point2DGenerator {
 				uniformUECount++;
 			
 			probDataRate = random.nextDouble();
-			if(0 <= probDataRate && probDataRate <= VOICEPROB)
+			if(probDataRate <= VOICEPROB)
 			{
 				ueDataDemands.add(VOICE);
 				resourceBlocksRequired += VOICERB;
 			}
 			else
-				if(VOICEPROB < probDataRate && probDataRate < DATAPROB)
+				if(probDataRate < (DATAPROB + VOICEPROB))
 				{
 					ueDataDemands.add(DATA);
 					resourceBlocksRequired += DATARB;
@@ -246,7 +245,7 @@ public class Point2DGenerator {
 		}
 	}
 	
-	private void printPoints(Set<Point2D> points, PrintWriter out, int stationType) {
+	private void printPoints(LinkedHashSet<Point2D> points, PrintWriter out, int stationType) {
 		if(stationType == STATIONMACRO)
 		{
 			Iterator<Point2D> itrMacro= points.iterator();
