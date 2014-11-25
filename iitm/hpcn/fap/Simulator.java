@@ -101,7 +101,7 @@ public class Simulator {
 		int picoCount = setFAP.size();
 		System.out.println("\nMacroID: " + macroIndex + ", Pico#: " + picoCount + ", MUE#: " + associatedMacroUE.size() + ", PUE#: " + picoUECount + ", MVUE#: " + macroVictimCount + ", MacroLocation: " + "(" + listMAP.get(macroIndex).getLocation().getX() + "," + listMAP.get(macroIndex).getLocation().getY() + ")");
 		for (FAP fap : setFAP) {
-			System.out.println("PicoID : " + fap.getId() + ", PUE#: " + fap.getUECount() + ", PVUE#: " + fap.getFapVictimCount());
+			System.out.println("PicoID : " + fap.getId() + ", PUE#: " + fap.getUECount() + ", PVUE#: " + fap.getFapVictimCount() + ", PicoLocation: " + "(" + fap.getLocation().getX() + "," + fap.getLocation().getY() + ")");
 		}
 		
 		//calculateSinrRange();	//to check the SINR ranges at various distances

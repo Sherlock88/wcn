@@ -9,7 +9,7 @@ public interface Params {
 	public static final int MACRO_RADIUS = 250;
 	public static final int PICO_RADIUS = 35;
 	public static final int MAX_PICO_COUNT = 5;
-	public static final int USERS_PER_MACRO = 60;
+	public static final int USERS_PER_MACRO = 70;
 	public static final int A = 29;
 	public static final int B = 7;
 	public static final int MBSToPBS = 75;

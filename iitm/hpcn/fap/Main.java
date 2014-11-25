@@ -167,10 +167,10 @@ public class Main {
 				for(int i = 1; i <= RUNS; i++)
 				{
 					System.out.println("\nScenario: " + i + "\n-------------");
-					for(int j = 0; j <= 6; j++)
+					for(int macroIndex = 0; macroIndex <= 6; macroIndex++)
 					{
 						Simulator scenario = new Simulator();
-						scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, args[0] + args[3] + "-" + i, runType, j);
+						scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, args[0] + args[3] + "-" + i, runType, macroIndex);
 						scenario.runSim();
 	
 						if(runType == 5)

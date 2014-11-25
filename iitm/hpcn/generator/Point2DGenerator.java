@@ -83,10 +83,26 @@ public class Point2DGenerator {
 			setMACRO = new LinkedHashSet<Point2D>();
 			setFEMTO = new LinkedHashSet<Point2D>();
 			setUE = new LinkedHashSet<Point2D>();
+			
+			// Re-initialize
 			totalPicoCount = 0;
 			picoPerMacro.clear();
+			ueToMC.clear();
+			ueDataDemands.clear();
+			pcToMC.clear();
+			
 			g.generateClusterScenario();
 			g.saveToFile(path, ueFileName + "-" + i, femtoFileName + "-" + i, macroFileName + "-" + i);
+			
+			System.out.println("PCToMC: " + i);
+			Iterator<Integer> itrPCToMC = pcToMC.iterator();
+			while(itrPCToMC.hasNext())
+			{
+				int macroIndex = ((Integer)itrPCToMC.next()).intValue();
+				System.out.print(macroIndex + " ");
+			}
+			System.out.println();
+			
 		}
 		
 		System.out.println("\nFor " + ueCount + " UEs, expected RB requirement averaging over " + (7 * N_SCENARIOS) + " MCs in " 
@@ -129,6 +145,7 @@ public class Point2DGenerator {
 		totalPicoCount += picoCount;
 		picoPerMacro.addElement(new Integer(picoCount));
 		
+		System.out.println("MCID: " + macroIndex + ", picoPerMacro: " + picoCount);
 		genPico:
 		for(int i = 0; i < picoCount; i++)
 		{
@@ -150,7 +167,7 @@ public class Point2DGenerator {
 				}
 			}
 			setFEMTO.add(new Point2D.Double(xCo, yCo));
-			pcToMC.add(macroIndex);
+			pcToMC.add(macroIndex); System.out.println("MCID: " + macroIndex);
 		}
 	}
 	
@@ -205,7 +222,7 @@ public class Point2DGenerator {
 			double hotspotMin = radiusPico - Params.B;
 			double hotspotMax = radiusPico + A;
 			double hotspotRadius = hotspotMin + (hotspotMax - hotspotMin) * random.nextDouble();
-			System.out.println("MC: " + locMacro + ", PC: " + locPico + ", HPRadius: " + hotspotRadius);
+			//System.out.println("MC: " + locMacro + ", PC: " + locPico + ", HPRadius: " + hotspotRadius);
 			getPoints(xPico, yPico, hotspotRadius, hotspotUECount / intPico, 0, 0, STATIONPICO);
 		}
 	}
@@ -261,10 +278,6 @@ public class Point2DGenerator {
 		else 
 			if(stationType == STATIONPICO)
 			{
-				/*for (Point2D point : points) {
-					out.printf("%6.4f %6.4f%n", point.getX(), point.getY());
-				}*/
-				
 				Iterator<Point2D> itrPico= points.iterator();
 				Iterator<Integer> itrPCToMC = pcToMC.iterator();
 				
