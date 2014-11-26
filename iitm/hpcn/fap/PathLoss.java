@@ -1,6 +1,7 @@
 package iitm.hpcn.fap;
 
 import hpcn.iitm.fap.resources.FAP;
+import hpcn.iitm.fap.resources.MAP;
 import hpcn.iitm.fap.resources.Params;
 import hpcn.iitm.fap.resources.UE;
 
@@ -9,8 +10,8 @@ import hpcn.iitm.fap.resources.UE;
 public class PathLoss {
 
 	public static double PLmbs2UE(double distance) {
-//		double PLoss = 128.1 + (37.6 * Math.log10 (distance*0.001));	//standard pathloss eqn
-		double PLoss = 138 + (37.6 * Math.log10(distance * 0.001));		//provides 654m of coverage
+		double PLoss = 128.1 + (37.6 * Math.log10 (distance*0.001));	//standard pathloss eqn
+//		double PLoss = 138 + (37.6 * Math.log10(distance * 0.001));		//provides 654m of coverage
 //		double PLoss = 0 + (25.0 * Math.log10 (distance));
 		return PLoss;
 	}
@@ -37,22 +38,28 @@ public class PathLoss {
 		return PLoss;
 	}
 	
-	// if fap is null then it is a macro cell.
+	public static double rxPowerdB(UE ue, MAP map)
+	{
+		double rxSignal = 0;
+		double distance = 0;
+		distance = ue.getLocation().distance(map.getLocation());
+		rxSignal = watt2dB(Params.MACRO_POWER) - PathLoss.PLmbs2UE(distance);
+		return rxSignal;
+	}
+	
 	public static double rxPowerdB(UE ue, FAP fap)
 	{
 		double rxSignal = 0;
 		double distance = 0;
-		if (fap == null) {
-			distance = ue.getLocation().distance(0, 0);
-			rxSignal = watt2dB(Params.MACRO_POWER) - PathLoss.PLmbs2UE(distance);
-		} else {
-			distance = ue.getLocation().distance(fap.getLocation());
-			rxSignal = watt2dB(Params.FAP_POWER) - PathLoss.PLfap2UE(distance);
-		}
+		distance = ue.getLocation().distance(fap.getLocation());
+		rxSignal = watt2dB(Params.FAP_POWER) - PathLoss.PLfap2UE(distance);
 		return rxSignal;
 	}
-	
-	// if fap is null then it is a macro cell.
+
+	public static double rxPowerWatt(UE ue, MAP map) {
+		return dB2watt(rxPowerdB(ue,map));
+	}
+
 	public static double rxPowerWatt(UE ue, FAP fap) {
 		return dB2watt(rxPowerdB(ue,fap));
 	}

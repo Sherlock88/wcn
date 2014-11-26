@@ -93,16 +93,6 @@ public class Point2DGenerator {
 			
 			g.generateClusterScenario();
 			g.saveToFile(path, ueFileName + "-" + i, femtoFileName + "-" + i, macroFileName + "-" + i);
-			
-			System.out.println("PCToMC: " + i);
-			Iterator<Integer> itrPCToMC = pcToMC.iterator();
-			while(itrPCToMC.hasNext())
-			{
-				int macroIndex = ((Integer)itrPCToMC.next()).intValue();
-				System.out.print(macroIndex + " ");
-			}
-			System.out.println();
-			
 		}
 		
 		System.out.println("\nFor " + ueCount + " UEs, expected RB requirement averaging over " + (7 * N_SCENARIOS) + " MCs in " 
@@ -145,7 +135,6 @@ public class Point2DGenerator {
 		totalPicoCount += picoCount;
 		picoPerMacro.addElement(new Integer(picoCount));
 		
-		System.out.println("MCID: " + macroIndex + ", picoPerMacro: " + picoCount);
 		genPico:
 		for(int i = 0; i < picoCount; i++)
 		{
@@ -167,7 +156,7 @@ public class Point2DGenerator {
 				}
 			}
 			setFEMTO.add(new Point2D.Double(xCo, yCo));
-			pcToMC.add(macroIndex); System.out.println("MCID: " + macroIndex);
+			pcToMC.add(macroIndex);
 		}
 	}
 	
@@ -218,7 +207,7 @@ public class Point2DGenerator {
 			locPico = new Point2D.Double(xPico,  yPico);
 			double distMBSToPBS = locMacro.distance(locPico);
 			distMBSToPBS -= radiusPico;
-			double A = distMBSToPBS * 0.2;
+			double A = distMBSToPBS * Params.A_PERCENTAGE / 10;
 			double hotspotMin = radiusPico - Params.B;
 			double hotspotMax = radiusPico + A;
 			double hotspotRadius = hotspotMin + (hotspotMax - hotspotMin) * random.nextDouble();

@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 
 public class Main {
 
-	public static int RUNS;	//= Point2DGenerator.N_SCENARIOS; raj
+	public static int RUNS;
 	public static double ALPHA;
 	public static double BIAS;
 	public static boolean debug = false;
@@ -49,7 +49,6 @@ public class Main {
 		PrintWriter capacityPerMVWriter = null;
 		PrintWriter capacityPerFVWriter = null;
 		PrintWriter capacityPerAllVictimWriter = null;
-		
 		PrintWriter capacityMeanMV = null;
 		PrintWriter capacityMeanFV = null;
 		PrintWriter capacityMeanMA = null;
@@ -58,6 +57,7 @@ public class Main {
 		PrintWriter capacityStdFV = null;
 		PrintWriter capacityStdMA = null;
 		PrintWriter capacityStdFA = null;
+		PrintWriter mtlFileNameWriter = null;
 		
 		try {
 			eeWriter = new PrintWriter(outPath1+"EE");
@@ -80,189 +80,174 @@ public class Main {
 			capacityStdFV = new PrintWriter(outPath1 + "capacityStdFV_FINAL");
 			capacityStdMA = new PrintWriter(outPath1 + "capacityStdMA_FINAL");
 			capacityStdFA = new PrintWriter(outPath1 + "capacityStdFA_FINAL");
+			mtlFileNameWriter = new PrintWriter(outPath_mtl + "MATLAB_FILES_NAME.m");
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 		
+		mtlFileNameWriter.write("addpath('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Code');\n");
+		
+		eeWriter.append(ALPHA+"\t");
+		capacityWriter.append(ALPHA+"\t");
+		capacityMWriter.append(ALPHA+"\t");
+		capacityFWriter.append(ALPHA+"\t");
+		capacityMVWriter.append(ALPHA+"\t");
+		capacityFVWriter.append(ALPHA+"\t");
+		capacityAllVictimWriter.append(ALPHA+"\t");
+		capacityPerMVWriter.append(ALPHA+"\t");
+		capacityPerFVWriter.append(ALPHA+"\t");
+		capacityPerAllVictimWriter.append(ALPHA+"\t");
+		fairnessWriter.append(ALPHA+"\t");
+		
+		capacityMeanMV.append(ALPHA+"\t");
+		capacityMeanFV.append(ALPHA+"\t");
+		capacityMeanMA.append(ALPHA+"\t");
+		capacityMeanFA.append(ALPHA+"\t");
+		capacityStdMV.append(ALPHA+"\t");
+		capacityStdFV.append(ALPHA+"\t");
+		capacityStdMA.append(ALPHA+"\t");
+		capacityStdFA.append(ALPHA+"\t");
+		
+		for(int runType = 1 ; runType <= 5; runType++)
+		{
+			if(runType == 2 || runType == 3 || runType == 4)
+				continue;
+			
+			CDFHelper macroSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mSinr_"+ALPHA+"."+runType);
+			CDFHelper macroVictimSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mVSinr_"+ALPHA+"."+runType);
+			CDFHelper femtoSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fSinr_"+ALPHA+"."+runType);
+			CDFHelper femtoVictimSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fVSinr_"+ALPHA+"_"+"."+runType);
+			CDFHelper allSINRCDF = new CDFHelper(40, -40, Params.CDF_STEP, outPath1+"allSinr_"+ALPHA+"."+runType);
+			CDFHelper allVictimSINRCDF = new CDFHelper(40, -40, Params.CDF_STEP, outPath1+"allVictimSinr_"+ALPHA+"."+runType);
+			CDFHelper macroBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"mBitRate_"+ALPHA+"."+runType);
+			CDFHelper femtoBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"fBitRate_"+ALPHA+"."+runType);
+			CDFHelper allBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"allBitRate_"+ALPHA+"."+runType);
+			CDFHelper macroVictimBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"mVBitRate_"+ALPHA+"."+runType);
+			CDFHelper femtoVictimBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"fVBitRate_"+ALPHA+"."+runType);
+			CDFHelper allVictimBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"allVBitRate_"+ALPHA+"."+runType);
+			CDFHelper allVictimPercentileBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"allVPerBitRate_"+ALPHA+"."+runType);
 
-			PrintWriter mtlFileNameWriter = null;
-			try {
-				mtlFileNameWriter = new PrintWriter(outPath_mtl + "MATLAB_FILES_NAME.m");
-			}
-			catch (IOException e)
+			//CDFHelper macroSinrILCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mSinrIL_"+ALPHA+"_"+BIAS+"_"+runType);
+			//CDFHelper macroSinrIFCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mSinrIF_"+ALPHA+"_"+BIAS+"_"+runType);
+			//CDFHelper femtoSinrILCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fSinrIL_"+ALPHA+"_"+BIAS+"_"+runType);
+			//CDFHelper femtoSinrIFCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fSinrIF_"+ALPHA+"_"+BIAS+"_"+runType);
+			
+			double energyEfficiency = 0;
+			double systemCapacity = 0;
+			double systemCapacityM = 0;
+			double systemCapacityF = 0;
+			double systemCapacityMV = 0;
+			double systemCapacityFV = 0;
+			double systemCapacityAllVictim = 0;
+			double systemCapacityPerMV = 0;
+			double systemCapacityPerFV = 0;
+			double systemCapacityPerAllVictim = 0;
+			double fairnessIndex = 0;
+			double meanCapacityMV = 0;
+			double meanCapacityFV = 0;
+			double meanCapacityMA = 0;
+			double meanCapacityFA = 0;
+			double stdCapacityMV = 0;
+			double stdCapacityFV = 0;
+			double stdCapacityMA = 0;
+			double stdCapacityFA = 0;
+
+			for(int i = 1; i <= RUNS; i++)
 			{
-				e.printStackTrace();
-			}
-			
-			mtlFileNameWriter.write("addpath('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Code');\n");
-			
-			eeWriter.append(ALPHA+"\t");
-			capacityWriter.append(ALPHA+"\t");
-			capacityMWriter.append(ALPHA+"\t");
-			capacityFWriter.append(ALPHA+"\t");
-			capacityMVWriter.append(ALPHA+"\t");
-			capacityFVWriter.append(ALPHA+"\t");
-			capacityAllVictimWriter.append(ALPHA+"\t");
-			capacityPerMVWriter.append(ALPHA+"\t");
-			capacityPerFVWriter.append(ALPHA+"\t");
-			capacityPerAllVictimWriter.append(ALPHA+"\t");
-			fairnessWriter.append(ALPHA+"\t");
-			
-			capacityMeanMV.append(ALPHA+"\t");
-			capacityMeanFV.append(ALPHA+"\t");
-			capacityMeanMA.append(ALPHA+"\t");
-			capacityMeanFA.append(ALPHA+"\t");
-			capacityStdMV.append(ALPHA+"\t");
-			capacityStdFV.append(ALPHA+"\t");
-			capacityStdMA.append(ALPHA+"\t");
-			capacityStdFA.append(ALPHA+"\t");
-			
-			for(int runType = 1 ; runType <= 5; runType++)
-			{
-				if(runType == 2 || runType == 3 || runType == 4)
-					continue;
-				CDFHelper macroSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mSinr_"+ALPHA+"_"+runType);
-				CDFHelper macroVictimSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mVSinr_"+ALPHA+"_"+runType);
-				//CDFHelper macroSinrILCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mSinrIL_"+ALPHA+"_"+BIAS+"_"+runType);
-				//CDFHelper macroSinrIFCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"mSinrIF_"+ALPHA+"_"+BIAS+"_"+runType);
-				CDFHelper femtoSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fSinr_"+ALPHA+"_"+runType);
-				CDFHelper femtoVictimSinrCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fVSinr_"+ALPHA+"_"+runType);
-				//CDFHelper femtoSinrILCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fSinrIL_"+ALPHA+"_"+BIAS+"_"+runType);
-				//CDFHelper femtoSinrIFCDF = new CDFHelper(40,-40, Params.CDF_STEP, outPath1+"fSinrIF_"+ALPHA+"_"+BIAS+"_"+runType);
-				CDFHelper allSINRCDF = new CDFHelper(40, -40, Params.CDF_STEP, outPath1+"allSinr_"+ALPHA+"_"+runType);
-				CDFHelper allVictimSINRCDF = new CDFHelper(40, -40, Params.CDF_STEP, outPath1+"allVictimSinr_"+ALPHA+"_"+runType);
-
-				CDFHelper macroBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"mBitRate_"+ALPHA+"_"+runType);	//raj
-				CDFHelper femtoBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"fBitRate_"+ALPHA+"_"+runType);
-				CDFHelper allBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"allBitRate_"+ALPHA+"_"+runType);
-
-				CDFHelper macroVictimBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"mVBitRate_"+ALPHA+"_"+runType);
-				CDFHelper femtoVictimBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"fVBitRate_"+ALPHA+"_"+runType);
-				CDFHelper allVictimBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"allVBitRate_"+ALPHA+"_"+runType);
-				CDFHelper allVictimPercentileBitRateCDF = new CDFHelper(1000, 0, Params.CDF_STEP, outPath1+"allVPerBitRate_"+ALPHA+"_"+runType);
-
-				double energyEfficiency = 0;
-				double systemCapacity = 0;
-				double systemCapacityM = 0;
-				double systemCapacityF = 0;
-				double systemCapacityMV = 0;
-				double systemCapacityFV = 0;
-				double systemCapacityAllVictim = 0;
-				double systemCapacityPerMV = 0;
-				double systemCapacityPerFV = 0;
-				double systemCapacityPerAllVictim = 0;
-				double fairnessIndex = 0;
-				
-				double meanCapacityMV = 0;
-				double meanCapacityFV = 0;
-				double meanCapacityMA = 0;
-				double meanCapacityFA = 0;
-				double stdCapacityMV = 0;
-				double stdCapacityFV = 0;
-				double stdCapacityMA = 0;
-				double stdCapacityFA = 0;
-
-				for(int i = 1; i <= RUNS; i++)
+				System.out.println("\nScenario: " + i + "\n-------------");
+				for(int macroIndex = 0; macroIndex <= 6; macroIndex++)
 				{
-					System.out.println("\nScenario: " + i + "\n-------------");
-					for(int macroIndex = 0; macroIndex <= 6; macroIndex++)
-					{
-						Simulator scenario = new Simulator();
-						scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, args[0] + args[3] + "-" + i, runType, macroIndex);
-						scenario.runSim();
-	
-						if(runType == 5)
-							generateMatlabData(outPath_mtl1, outPath_mtl2, i, scenario, mtlFileNameWriter);
-						
-						macroSinrCDF.addCDFList(scenario.getSinrListM());
-						macroVictimSinrCDF.addCDFList(scenario.getMacroVictimSinr());
-						//macroSinrILCDF.addCDFList(scenario.getSinrListM_IL());
-						//macroSinrIFCDF.addCDFList(scenario.getSinrListM_IF());
-						femtoSinrCDF.addCDFList(scenario.getSinrListF());
-						femtoVictimSinrCDF.addCDFList(scenario.getFemtoVictimSinr());
-						//femtoSinrILCDF.addCDFList(scenario.getSinrListF_IL());
-						//femtoSinrIFCDF.addCDFList(scenario.getSinrListF_IF());
-	
-						macroBitRateCDF.addCDFList(scenario.getBitRateListM());
-						femtoBitRateCDF.addCDFList(scenario.getBitRateListF());
-	
-						macroVictimBitRateCDF.addCDFList(scenario.getBitRateListMV());
-						femtoVictimBitRateCDF.addCDFList(scenario.getBitRateListFV());
-						allVictimBitRateCDF.addCDFList(scenario.getBitRateListAllVictim());
-						allVictimPercentileBitRateCDF.addCDFList(scenario.getBitRateList5PerAllVictim());
-	
-						allBitRateCDF.addCDFList(scenario.getBitRateListAll());
-						allSINRCDF.addCDFList(scenario.getSinrAll());
-						allVictimSINRCDF.addCDFList(scenario.getSinrAllVictim());
-	
-						energyEfficiency += scenario.getEE();
-						systemCapacity += scenario.getCAP();
-						systemCapacityM += scenario.getCAPM();
-						systemCapacityF += scenario.getCAPF();
-						systemCapacityMV += scenario.getCAPMV();
-						systemCapacityFV += scenario.getCAPFV();
-						systemCapacityAllVictim += scenario.getCAPAllVictim();
-						systemCapacityPerMV += scenario.getCapacity5PerMV();
-						systemCapacityPerFV += scenario.getCapacity5PerFV();
-						systemCapacityPerAllVictim += scenario.getCapacity5PerAllVictim();
-						fairnessIndex += scenario.getFairnessIndexAll();
-						
-						meanCapacityMV += scenario.meanBitrateMV();
-						meanCapacityFV += scenario.meanBitrateFV();
-						meanCapacityMA += scenario.meanBitrateMA();
-						meanCapacityFA += scenario.meanBitrateFA();
-						stdCapacityMV += scenario.stdBitrateMV();
-						stdCapacityFV += scenario.stdBitrateFV();
-						stdCapacityMA += scenario.stdBitrateMA();
-						stdCapacityFA += scenario.stdBitrateFA();
-					}
+					Simulator scenario = new Simulator();
+					scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, args[0] + args[3] + "-" + i, runType, macroIndex);
+					scenario.runSim();
+
+					if(runType == 5)
+						generateMatlabData(outPath_mtl1, outPath_mtl2, i, scenario, mtlFileNameWriter);
+					
+					macroSinrCDF.addCDFList(scenario.getSinrListM());
+					macroVictimSinrCDF.addCDFList(scenario.getMacroVictimSinr());
+					femtoSinrCDF.addCDFList(scenario.getSinrListF());
+					femtoVictimSinrCDF.addCDFList(scenario.getFemtoVictimSinr());
+					macroBitRateCDF.addCDFList(scenario.getBitRateListM());
+					femtoBitRateCDF.addCDFList(scenario.getBitRateListF());
+					macroVictimBitRateCDF.addCDFList(scenario.getBitRateListMV());
+					femtoVictimBitRateCDF.addCDFList(scenario.getBitRateListFV());
+					allVictimBitRateCDF.addCDFList(scenario.getBitRateListAllVictim());
+					allVictimPercentileBitRateCDF.addCDFList(scenario.getBitRateList5PerAllVictim());
+					allBitRateCDF.addCDFList(scenario.getBitRateListAll());
+					allSINRCDF.addCDFList(scenario.getSinrAll());
+					allVictimSINRCDF.addCDFList(scenario.getSinrAllVictim());
+					
+					//macroSinrILCDF.addCDFList(scenario.getSinrListM_IL());
+					//macroSinrIFCDF.addCDFList(scenario.getSinrListM_IF());
+					//femtoSinrILCDF.addCDFList(scenario.getSinrListF_IL());
+					//femtoSinrIFCDF.addCDFList(scenario.getSinrListF_IF());
+
+					energyEfficiency += scenario.getEE();
+					systemCapacity += scenario.getCAP();
+					systemCapacityM += scenario.getCAPM();
+					systemCapacityF += scenario.getCAPF();
+					systemCapacityMV += scenario.getCAPMV();
+					systemCapacityFV += scenario.getCAPFV();
+					systemCapacityAllVictim += scenario.getCAPAllVictim();
+					systemCapacityPerMV += scenario.getCapacity5PerMV();
+					systemCapacityPerFV += scenario.getCapacity5PerFV();
+					systemCapacityPerAllVictim += scenario.getCapacity5PerAllVictim();
+					fairnessIndex += scenario.getFairnessIndexAll();
+					
+					meanCapacityMV += scenario.meanBitrateMV();
+					meanCapacityFV += scenario.meanBitrateFV();
+					meanCapacityMA += scenario.meanBitrateMA();
+					meanCapacityFA += scenario.meanBitrateFA();
+					stdCapacityMV += scenario.stdBitrateMV();
+					stdCapacityFV += scenario.stdBitrateFV();
+					stdCapacityMA += scenario.stdBitrateMA();
+					stdCapacityFA += scenario.stdBitrateFA();
 				}
-
-				
-				macroSinrCDF.saveToFile();
-				macroVictimSinrCDF.saveToFile();
-				//macroSinrILCDF.saveToFile();
-				//macroSinrIFCDF.saveToFile();
-				femtoSinrCDF.saveToFile();
-				femtoVictimSinrCDF.saveToFile();
-				//femtoSinrILCDF.saveToFile();
-				//femtoSinrIFCDF.saveToFile();
-
-				macroBitRateCDF.saveToFile();
-				femtoBitRateCDF.saveToFile();
-
-				macroVictimBitRateCDF.saveToFile();
-				femtoVictimBitRateCDF.saveToFile();
-				allVictimBitRateCDF.saveToFile();
-				allVictimPercentileBitRateCDF.saveToFile();
-
-				allBitRateCDF.saveToFile();
-				allSINRCDF.saveToFile();
-				allVictimSINRCDF.saveToFile();
-
-				eeWriter.append(runType+"\t"+energyEfficiency/RUNS+"\n");	//original format
-				capacityWriter.append(systemCapacity/RUNS+"\n");
-				capacityMWriter.append(systemCapacityM/RUNS+"\n");
-				capacityFWriter.append(systemCapacityF/RUNS+"\n");
-				capacityMVWriter.append(systemCapacityMV/RUNS+"\n");
-				capacityFVWriter.append(systemCapacityFV/RUNS+"\n");
-				capacityAllVictimWriter.append(systemCapacityAllVictim/RUNS+"\n");
-				capacityPerMVWriter.append(systemCapacityPerMV/RUNS+"\n");
-				capacityPerFVWriter.append(systemCapacityPerFV/RUNS+"\n");
-				capacityPerAllVictimWriter.append(systemCapacityPerAllVictim/RUNS+"\n");
-				fairnessWriter.append(fairnessIndex/RUNS+"\n");
-				
-				capacityMeanMV.append(meanCapacityMV/RUNS + "\n");
-				capacityMeanFV.append(meanCapacityFV/RUNS + "\n");
-				capacityMeanMA.append(meanCapacityMA/RUNS + "\n");
-				capacityMeanFA.append(meanCapacityFA/RUNS + "\n");
-				capacityStdMV.append(stdCapacityMV/RUNS + "\n");
-				capacityStdFV.append(stdCapacityFV/RUNS + "\n");
-				capacityStdMA.append(stdCapacityMA/RUNS + "\n");
-				capacityStdFA.append(stdCapacityFA/RUNS + "\n");
 			}
+
+			
+			macroSinrCDF.saveToFile();
+			macroVictimSinrCDF.saveToFile();
+			femtoSinrCDF.saveToFile();
+			femtoVictimSinrCDF.saveToFile();
+			macroBitRateCDF.saveToFile();
+			femtoBitRateCDF.saveToFile();
+			macroVictimBitRateCDF.saveToFile();
+			femtoVictimBitRateCDF.saveToFile();
+			allVictimBitRateCDF.saveToFile();
+			allVictimPercentileBitRateCDF.saveToFile();
+			allBitRateCDF.saveToFile();
+			allSINRCDF.saveToFile();
+			allVictimSINRCDF.saveToFile();
+			
+			//macroSinrILCDF.saveToFile();
+			//macroSinrIFCDF.saveToFile();
+			//femtoSinrILCDF.saveToFile();
+			//femtoSinrIFCDF.saveToFile();
+
+			eeWriter.append(runType+"\t"+energyEfficiency/RUNS+"\n");	//original format
+			capacityWriter.append(systemCapacity/RUNS+"\n");
+			capacityMWriter.append(systemCapacityM/RUNS+"\n");
+			capacityFWriter.append(systemCapacityF/RUNS+"\n");
+			capacityMVWriter.append(systemCapacityMV/RUNS+"\n");
+			capacityFVWriter.append(systemCapacityFV/RUNS+"\n");
+			capacityAllVictimWriter.append(systemCapacityAllVictim/RUNS+"\n");
+			capacityPerMVWriter.append(systemCapacityPerMV/RUNS+"\n");
+			capacityPerFVWriter.append(systemCapacityPerFV/RUNS+"\n");
+			capacityPerAllVictimWriter.append(systemCapacityPerAllVictim/RUNS+"\n");
+			fairnessWriter.append(fairnessIndex/RUNS+"\n");
+			capacityMeanMV.append(meanCapacityMV/RUNS + "\n");
+			capacityMeanFV.append(meanCapacityFV/RUNS + "\n");
+			capacityMeanMA.append(meanCapacityMA/RUNS + "\n");
+			capacityMeanFA.append(meanCapacityFA/RUNS + "\n");
+			capacityStdMV.append(stdCapacityMV/RUNS + "\n");
+			capacityStdFV.append(stdCapacityFV/RUNS + "\n");
+			capacityStdMA.append(stdCapacityMA/RUNS + "\n");
+			capacityStdFA.append(stdCapacityFA/RUNS + "\n");
+		}
 
 		mtlFileNameWriter.close();
 		eeWriter.close();
@@ -276,7 +261,6 @@ public class Main {
 		capacityPerFVWriter.close();
 		capacityPerAllVictimWriter.close();
 		fairnessWriter.close();
-		
 		capacityMeanMV.close();
 		capacityMeanFV.close();
 		capacityMeanMA.close();
@@ -285,6 +269,7 @@ public class Main {
 		capacityStdFV.close();
 		capacityStdMA.close();
 		capacityStdFA.close();
+		
 		System.out.println("\nAll done...");
 	}
 	

@@ -10,7 +10,7 @@ public interface Params {
 	public static final int PICO_RADIUS = 35;
 	public static final int MAX_PICO_COUNT = 5;
 	public static final int USERS_PER_MACRO = 70;
-	public static final int A = 29;
+	public static final double A_PERCENTAGE = 20;
 	public static final int B = 7;
 	public static final int MBSToPBS = 75;
 	public static final int PBSToPBS = 80;
@@ -34,7 +34,7 @@ public interface Params {
 	public static final int SCs_FOR_20_MHz = 100;
 	
 	//Transmitted power should be 46dbm for 10MHz bandwidth
-	public static final double MACRO_POWER = 43/SCs_FOR_5_MHz;	// 46 dbm for 10MHz, 43 dbm for <=5MHz
+	public static final double MACRO_POWER = 20.0/SCs_FOR_5_MHz;	// 46 dbm for 10MHz, 43 dbm for <=5MHz
 	public static final double FAP_POWER = 1.0/SCs_FOR_5_MHz;		// 30 dbm [PICO]
 
 	public static final double MIN_SINR_TH_DB = -10.0;

@@ -139,7 +139,7 @@ public class Simulator {
 		makeSummaryStatistics();
 	}
 
-	public void calculateSinrRange() {
+	/*public void calculateSinrRange() {
 		Point2D point = new Point2D.Double(450.0, 0.0);
 		FAP fap = new FAP(10, point);
 		
@@ -151,7 +151,7 @@ public class Simulator {
 			double distance = dist;
 			double femtoSignalSum = 0.0;
 			UE ue = new UE(dist, new Point2D.Double(distance, 0.0));
-			mSignal = PathLoss.rxPowerWatt(ue, null);
+			mSignal = PathLoss.rxPowerWatt(ue, listMAP.get(macroIndex));
 
 			fSignal = PathLoss.rxPowerWatt(ue, fap);
 
@@ -168,11 +168,11 @@ public class Simulator {
 			System.out.printf("%d Diff: %.4f mSINR %.4f fSINR %.4f mSignal %.10f fSignal %.10f\n", 
 					dist, diff, sinrMacro_IL, sinrFemto_IL, PathLoss.watt2dB(mSignal), PathLoss.watt2dB(fSignal));
 		}
-	}
+	}*/
 
 	public void warmUpUe() {
 		for (UE ue : setUE) {
-			double macroSignal = PathLoss.rxPowerWatt(ue, null);	//NULL represents Macrocell
+			double macroSignal = PathLoss.rxPowerWatt(ue, listMAP.get(macroIndex));
 			double noiseWatt = PathLoss.dB2watt(Params.NOISE_DB);
 			double sinrMacro_IL = 0.0;
 			double sinrMacro_IF = 0.0;
@@ -606,10 +606,10 @@ public class Simulator {
 				Point2D picoLocation = fap.getLocation();
 				double distPicoToMacro = macroLocation.distance(picoLocation);
 				distPicoToMacro -= Params.PICO_RADIUS;
-				double maxDist = Params.PICO_RADIUS + distPicoToMacro * 0.2;
+				double maxDist = Params.PICO_RADIUS + distPicoToMacro * Params.A_PERCENTAGE / 100;
 				double distPicoToUE = picoLocation.distance(ue.getLocation());
 				
-				if ((distPicoToUE >= Params.PICO_RADIUS) && (distPicoToUE <= maxDist)) {
+				if (/*(distPicoToUE >= Params.PICO_RADIUS) && */(distPicoToUE <= maxDist)) {
 					ue.setUeVictim(true);
 					victimCount++;
 					break;
