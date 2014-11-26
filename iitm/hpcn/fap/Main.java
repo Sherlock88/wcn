@@ -312,8 +312,20 @@ public class Main {
 		mtlCodeWriter.write("maximise c\nsubject to\n");
 		mtlCodeWriter.write("a>=0\nb>=0\na<1\nb<1\na+b<=1\n");
 		mtlCodeWriter.write("cvx_end\n");
+		mtlCodeWriter.write("mvue_avg=mean(mvue_count)\n");
+		mtlCodeWriter.write("final=[]\n");
+		mtlCodeWriter.write("length=size(mvue_count,1)\n");
+		mtlCodeWriter.write("for i = 1 : length\n");
+		mtlCodeWriter.write("	newcount=b+((mvue_count(i)-mvue_avg)/mvue_avg)*b\n");
+		mtlCodeWriter.write("	final=[final newcount];\n");
+		mtlCodeWriter.write("end\n");
+		mtlCodeWriter.write("mvue_count\n");
+		mtlCodeWriter.write("mvue_avg\n");
 		mtlCodeWriter.write("results = fopen('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Results\\ABS_SCENARIO_" + run + "_MC_" + macroIndex + "', 'w');\n");
 		mtlCodeWriter.write("fprintf(results, '%d %d\\n', a, b);\n");
+		mtlCodeWriter.write("for i = 1 : length\n");
+		mtlCodeWriter.write("	fprintf(results, '%d\\n',final(i));\n");
+		mtlCodeWriter.write("end\n");
 		mtlCodeWriter.write("fclose(results);\n");
 	}
 	

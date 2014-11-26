@@ -11,6 +11,7 @@ public class FAP {
 
 	private int id;
 	private int fapVictimCount;
+	private int mapVictimCount;
 	private Point2D location;
 	private double bias;
 	private int macroIndex;
@@ -20,6 +21,7 @@ public class FAP {
 		super();
 		this.id = id;
 		fapVictimCount = 0;
+		mapVictimCount = 0;
 		this.location = location;
 		this.bias = Main.BIAS;
 	}
@@ -28,11 +30,20 @@ public class FAP {
 		super();
 		this.id = id;
 		fapVictimCount = 0;
+		mapVictimCount = 0;
 		this.location = location;
 		this.bias = Main.BIAS;
 		this.macroIndex = macroIndex;
 	}
 
+	public int getMapVictimCount() {
+		return mapVictimCount;
+	}
+	
+	public void setMapVictimCount(int mapVictimCount) {
+		this.mapVictimCount = mapVictimCount;;
+	}
+	
 	public int getMacroIndex() {
 		return macroIndex;
 	}

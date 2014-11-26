@@ -493,6 +493,10 @@ public class Simulator {
 		for (FAP fap : setFAP)
 			matlabWriter.printf("%d\n", fap.getFapVictimCount());
 		matlabWriter.printf("];\n\n");
+		matlabWriter.printf("mvue_count = [...\n");
+		for (FAP fap : setFAP)
+			matlabWriter.printf("%d\n", fap.getMapVictimCount());
+		matlabWriter.printf("];\n\n");
 	}
 
 	public void makeSINRList() {
@@ -588,7 +592,7 @@ public class Simulator {
 	}
 
 	public void setVictimStatus() {
-		int victimCount = 0;
+		int macroVictimCount = 0;
 		Point2D macroLocation = listMAP.get(macroIndex).getLocation();
 		/*for (UE ue : associatedMacroUE) {
 			if (ue.getSinrMacroDB_IL() < Params.MIN_SINR_TH_DB) { //TODO WCN PROJECTs
@@ -611,13 +615,14 @@ public class Simulator {
 				
 				if (/*(distPicoToUE >= Params.PICO_RADIUS) && */(distPicoToUE <= maxDist)) {
 					ue.setUeVictim(true);
-					victimCount++;
+					macroVictimCount++;
+					fap.setMapVictimCount(fap.getMapVictimCount() + 1);
 					break;
 				}
 			}
 		}
 		
-		setMacroVictimCount(victimCount);
+		setMacroVictimCount(macroVictimCount);
 		
 		// Set PVUE count
 		for (FAP fap : setFAP) {
