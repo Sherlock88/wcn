@@ -15,9 +15,8 @@ public class ABSDataRate {
 	
 	public static void main(String[] args) {
 		
-		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 1000 0.1 6.0".split(" ");
-		RUNS = Integer.parseInt(args[3]);
-		RUNS = 2;
+		args = "Data/ UE-Dist-600-2000 PICO-Dist-600-6 MACRO-Dist-600-2000 2 0.1 6.0".split(" ");
+		RUNS = Integer.parseInt(args[4]);
 
 		String outPath1 = "./outPut/";
 		

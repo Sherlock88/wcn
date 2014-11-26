@@ -79,7 +79,7 @@ public class Point2DGenerator {
 	
 	public static void femtoClusterGenerator(int radiusM, int radiusP, int picoCount, double ueDensity, String path, String ueFileName, String femtoFileName, String macroFileName) {
 		Point2DGenerator g = new Point2DGenerator(radiusM, radiusP, picoCount, ueDensity);
-		for (int i = 1; i <= N_SCENARIOS; i++) {
+		for (int scenario = 1; scenario <= N_SCENARIOS; scenario++) {
 			setMACRO = new LinkedHashSet<Point2D>();
 			setFEMTO = new LinkedHashSet<Point2D>();
 			setUE = new LinkedHashSet<Point2D>();
@@ -92,7 +92,7 @@ public class Point2DGenerator {
 			pcToMC.clear();
 			
 			g.generateClusterScenario();
-			g.saveToFile(path, ueFileName + "-" + i, femtoFileName + "-" + i, macroFileName + "-" + i);
+			g.saveToFile(path, ueFileName + "-" + scenario, femtoFileName + "-" + scenario, macroFileName + "-" + scenario);
 		}
 		
 		System.out.println("\nFor " + ueCount + " UEs, expected RB requirement averaging over " + (7 * N_SCENARIOS) + " MCs in " 

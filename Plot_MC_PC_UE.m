@@ -25,5 +25,6 @@ UE_Y = dataArray{:, 2};
 xlabel('X Coordinate');
 ylabel('Y Coordinate');
 title('Locations of Macrocells and Picocells an UEs');
-plot(MC_X, MC_Y, 'rh', PC_X, PC_Y, 'bo', UE_X, UE_Y, 'g*');
+%plot(MC_X, MC_Y, 'rh');
 %plot(MC_X, MC_Y, 'rh', PC_X, PC_Y, 'bo');
+plot(MC_X, MC_Y, 'rh', PC_X, PC_Y, 'bo', UE_X, UE_Y, 'g*');

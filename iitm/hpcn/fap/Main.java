@@ -154,17 +154,17 @@ public class Main {
 			double stdCapacityMA = 0;
 			double stdCapacityFA = 0;
 
-			for(int i = 1; i <= RUNS; i++)
+			for(int run = 1; run <= RUNS; run++)
 			{
-				System.out.println("\nScenario: " + i + "\n-------------");
+				System.out.println("\nScenario: " + run + "\n-------------");
 				for(int macroIndex = 0; macroIndex <= 6; macroIndex++)
 				{
 					Simulator scenario = new Simulator();
-					scenario.init(args[0] + args[1] + "-" + i, args[0] + args[2] + "-" + i, args[0] + args[3] + "-" + i, runType, macroIndex);
+					scenario.init(args[0] + args[1] + "-" + run, args[0] + args[2] + "-" + run, args[0] + args[3] + "-" + run, runType, macroIndex);
 					scenario.runSim();
 
 					if(runType == 5)
-						generateMatlabData(outPath_mtl1, outPath_mtl2, i, scenario, mtlFileNameWriter);
+						generateMatlabData(outPath_mtl1, outPath_mtl2, run, scenario, mtlFileNameWriter, macroIndex);
 					
 					macroSinrCDF.addCDFList(scenario.getSinrListM());
 					macroVictimSinrCDF.addCDFList(scenario.getMacroVictimSinr());
@@ -273,7 +273,7 @@ public class Main {
 		System.out.println("\nAll done...");
 	}
 	
-	public static void generateMatlabData(String outPath_mtl1, String outPath_mtl2, int index, Simulator scenario, PrintWriter mtlFileNameWriter)
+	public static void generateMatlabData(String outPath_mtl1, String outPath_mtl2, int run, Simulator scenario, PrintWriter mtlFileNameWriter, int macroIndex)
 	{
 		try {
 			//PrintWriter brWriter = new PrintWriter(outPath1 + outPath2
@@ -281,15 +281,15 @@ public class Main {
 			//PrintWriter ueCountWriter = new PrintWriter(outPath1
 				//	+ outPath3 + "UECOUNT" + "-" + i);
 			PrintWriter mtlScnWriter = new PrintWriter(outPath_mtl1
-					+ "SCENARIO_" + index + ".m");
+					+ "SCENARIO_" + run + "_MC_" + macroIndex + ".m");
 			PrintWriter mtlCodeWriter = new PrintWriter(outPath_mtl2
-					+ "CODE_" + index + ".m");
+					+ "CODE_" + run + "_MC_" + macroIndex + ".m");
 
 			//scenario.writeDataRate(brWriter, false);
 			//scenario.writeUeCount(ueCountWriter);
 			scenario.writeMatlabScenario(mtlScnWriter);
-			writeMatlabCode(mtlCodeWriter, index);
-			mtlFileNameWriter.append("CODE_" + index + ";\n");
+			writeMatlabCode(mtlCodeWriter, run, macroIndex);
+			mtlFileNameWriter.append("CODE_" + run + "_MC_" + macroIndex + ";\n");
 
 			//brWriter.close();
 			//ueCountWriter.close();
@@ -300,11 +300,11 @@ public class Main {
 		}
 	}
 
-	public static void writeMatlabCode(PrintWriter mtlCodeWriter, int i)
+	public static void writeMatlabCode(PrintWriter mtlCodeWriter, int run, int macroIndex)
 	{
 		mtlCodeWriter.write("clc;\n");
 		mtlCodeWriter.write("addpath('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Scenarios');\n");
-		mtlCodeWriter.write("SCENARIO_" + i + "\n");
+		mtlCodeWriter.write("SCENARIO_" + run + "_MC_" + macroIndex + "\n");
 		mtlCodeWriter.write("cvx_begin\n");
 		mtlCodeWriter.write("variables a;\n");
 		mtlCodeWriter.write("variables b;\n");
@@ -312,7 +312,7 @@ public class Main {
 		mtlCodeWriter.write("maximise c\nsubject to\n");
 		mtlCodeWriter.write("a>=0\nb>=0\na<1\nb<1\na+b<=1\n");
 		mtlCodeWriter.write("cvx_end\n");
-		mtlCodeWriter.write("results = fopen('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Results\\ABS_value_" + i + "', 'w');\n");
+		mtlCodeWriter.write("results = fopen('E:\\Experiment\\Code\\Projects\\WCN\\matlabData\\Results\\ABS_SCENARIO_" + run + "_MC_" + macroIndex + "', 'w');\n");
 		mtlCodeWriter.write("fprintf(results, '%d %d\\n', a, b);\n");
 		mtlCodeWriter.write("fclose(results);\n");
 	}
