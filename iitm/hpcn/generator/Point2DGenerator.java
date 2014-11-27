@@ -33,30 +33,6 @@ public class Point2DGenerator {
 	private static Vector<Integer> pcToMC = new Vector<Integer>();
 	Random random;
 	
-	// Station types
-	public static final int STATIONMACRO = 0;
-	public static final int STATIONPICO = 1;
-	public static final int STATIONUE = 2;
-	
-	// Data rates
-	public static final int VOICE = 0;
-	public static final int DATA = 1;
-	public static final int VIDEO = 2;
-	public static final int VOICERATE = 16;
-	public static final int DATARATE = 48;
-	public static final int VIDEORATE = 128;
-	public static final double VOICEPROB = 0.2;
-	public static final double DATAPROB = 0.35;
-	public static final double VIDEOPROB = 0.45;
-	
-	// Resource blocks
-	public static final int RBCOUNT	= 250;
-	public static final int SUBCHANNEL	= 20;	//KHz
-	public static final int VOICERB = 1;		// Sub-channels
-	public static final int DATARB = 2;			// Sub-channels
-	public static final int VIDEORB = 7;		// Sub-channels
-	
-	
 	public Point2DGenerator(int radiusM, int radiusP, int picoCount, double ueDensity) {
 		this.radiusMacro = radiusM;
 		this.radiusPico = radiusP;
@@ -177,27 +153,27 @@ public class Point2DGenerator {
 				uniformUECount++;
 			
 			probDataRate = random.nextDouble();
-			if(probDataRate <= VOICEPROB)
+			if(probDataRate <= Params.VOICEPROB)
 			{
-				ueDataDemands.add(VOICE);
-				resourceBlocksRequired += VOICERB;
+				ueDataDemands.add(Params.VOICE);
+				resourceBlocksRequired += Params.VOICERB;
 			}
 			else
-				if(probDataRate < (DATAPROB + VOICEPROB))
+				if(probDataRate < (Params.DATAPROB + Params.VOICEPROB))
 				{
-					ueDataDemands.add(DATA);
-					resourceBlocksRequired += DATARB;
+					ueDataDemands.add(Params.DATA);
+					resourceBlocksRequired += Params.DATARB;
 				}
 				else
 				{
-					ueDataDemands.add(VIDEO);
-					resourceBlocksRequired += VIDEORB;
+					ueDataDemands.add(Params.VIDEO);
+					resourceBlocksRequired += Params.VIDEORB;
 				}
 			
 			ueToMC.add(macroIndex);
 		}
 		
-		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0, STATIONMACRO);
+		getPoints(xMacro, yMacro, radiusMacro, uniformUECount, 0, 0, Params.STATIONMACRO);
 		intPico = (Integer) picoPerMacro.get(macroIndex);
 		System.out.println("Macrocell " + macroIndex + ": Hotspot / Uniform : " + hotspotUECount + " / " + uniformUECount + ", Resource Blocks: " + resourceBlocksRequired + ", Pico/Macro: " + intPico);
 		for(i = totalPicoCount - intPico.intValue(); i < totalPicoCount; i++)
@@ -212,7 +188,7 @@ public class Point2DGenerator {
 			double hotspotMax = radiusPico + A;
 			double hotspotRadius = hotspotMin + (hotspotMax - hotspotMin) * random.nextDouble();
 			//System.out.println("MC: " + locMacro + ", PC: " + locPico + ", HPRadius: " + hotspotRadius);
-			getPoints(xPico, yPico, hotspotRadius, hotspotUECount / intPico, 0, 0, STATIONPICO);
+			getPoints(xPico, yPico, hotspotRadius, hotspotUECount / intPico, 0, 0, Params.STATIONPICO);
 		}
 	}
 	
@@ -224,7 +200,7 @@ public class Point2DGenerator {
 		
 		for (int i = 0; i < c; i++) {
 			
-			if(stationType == STATIONMACRO)
+			if(stationType == Params.STATIONMACRO)
 				//d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * Math.sqrt(random.nextDouble());
 				d = Params.MBSToUE + restrictedZoneInner + (R - restrictedZoneInner - restrictedZoneOuter - Params.MBSToUE) * random.nextDouble();
 			else
@@ -242,9 +218,9 @@ public class Point2DGenerator {
 	public void saveToFile(String path, String ueFileName, String femtoFileName, String macroFileName) {
 		try {
 			new File(path).mkdirs();
-			printPoints(setMACRO, new PrintWriter(path + macroFileName), STATIONMACRO);
-			printPoints(setFEMTO, new PrintWriter(path + femtoFileName), STATIONPICO);
-			printPoints(setUE, new PrintWriter(path + ueFileName), STATIONUE);
+			printPoints(setMACRO, new PrintWriter(path + macroFileName), Params.STATIONMACRO);
+			printPoints(setFEMTO, new PrintWriter(path + femtoFileName), Params.STATIONPICO);
+			printPoints(setUE, new PrintWriter(path + ueFileName), Params.STATIONUE);
 					
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -252,7 +228,7 @@ public class Point2DGenerator {
 	}
 	
 	private void printPoints(LinkedHashSet<Point2D> points, PrintWriter out, int stationType) {
-		if(stationType == STATIONMACRO)
+		if(stationType == Params.STATIONMACRO)
 		{
 			Iterator<Point2D> itrMacro= points.iterator();
 			Iterator<Integer> itrPicoPerMacro = picoPerMacro.iterator();
@@ -265,7 +241,7 @@ public class Point2DGenerator {
 			}
 		}
 		else 
-			if(stationType == STATIONPICO)
+			if(stationType == Params.STATIONPICO)
 			{
 				Iterator<Point2D> itrPico= points.iterator();
 				Iterator<Integer> itrPCToMC = pcToMC.iterator();

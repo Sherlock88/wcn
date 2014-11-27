@@ -4,7 +4,6 @@ import hpcn.iitm.fap.resources.FAP;
 import hpcn.iitm.fap.resources.MAP;
 import hpcn.iitm.fap.resources.UE;
 import hpcn.iitm.fap.resources.Params;
-
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,7 +15,6 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
-
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 public class Simulator {
@@ -71,6 +69,7 @@ public class Simulator {
 	private double fairnessIndexAllVictim;
 	private double alphaM;
 	private double alphaP;
+	private double maxAlphaP;
 
 	boolean ABSmode;
 
@@ -115,12 +114,22 @@ public class Simulator {
 	
 	public void init_2(String ABSFile)
 	{
-		this.ABSmode = true;
+		this.ABSmode = false;
 		try {
 			Scanner fileScanner = new Scanner(new File(ABSFile));
 			this.alphaM = fileScanner.nextDouble();
 			this.alphaP = fileScanner.nextDouble();
+			
+			// Calculating maximum alphaP
+			this.maxAlphaP = Integer.MIN_VALUE;
+			while(fileScanner.hasNext())
+			{
+				double alphaP = fileScanner.nextDouble();
+				if(this.maxAlphaP < alphaP)
+					this.maxAlphaP = alphaP;
+			}
 			fileScanner.close();
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}	
@@ -450,8 +459,22 @@ public class Simulator {
 	
 	public void calculateDataRatesABSFinal()
 	{
+		int totalResourceBlockDemand = 0, dataRate;
+		
 		for (UE ue : setUE)
-			ue.calcDataRateABSFinal(getMacroUeCount(), getMacroVictimCount(), this.alphaM, this.alphaP);
+		{
+			dataRate = ue.getDataRate();
+			switch(dataRate)
+			{
+				case Params.VOICE: totalResourceBlockDemand+= Params.VOICERB; break;
+				case Params.DATA: totalResourceBlockDemand+= Params.DATARB; break;
+				case Params.VIDEO: totalResourceBlockDemand+= Params.VIDEORB; break;
+			}
+		}
+		
+		for (UE ue : setUE)
+			//ue.calcDataRateABSFinal(getMacroUeCount(), getMacroVictimCount(), this.alphaM, this.alphaP);
+			ue.calcDataRateABSFinal(getMacroUeCount(), getMacroVictimCount(), this.alphaM, this.alphaP, this.maxAlphaP, totalResourceBlockDemand);
 	}
 	
 	public void writeUeCount(PrintWriter ueCountWriter)

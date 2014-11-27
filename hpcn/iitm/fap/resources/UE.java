@@ -199,32 +199,35 @@ public class UE {
 		bitRate = dataRate;
 	}
 	
-	public void calcDataRateABSFinal(int mUeCount, int mVictimCount, double alphaM, double alphaP) {
+	public void calcDataRateABSFinal(int mUeCount, int mVictimCount, double alphaM, double alphaP, double maxAlphaP, int totalResourceBlockDemand) {
 		double dataRate = 0.0;
 		if (ueType == Params.MUE) {
 			if (ueVictim == true) {
-				dataRate = (alphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IF))
+				dataRate = (maxAlphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IF))
 						/ Math.log10(2.0); 
-				dataRate = dataRate * (Params.BANDWIDTH / mVictimCount);
+				//dataRate = dataRate * (Params.BANDWIDTH / mVictimCount);
+				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
 			} else {
-				dataRate = (1.0 - alphaM - alphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IL))
+				dataRate = (1.0 - alphaM - maxAlphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IL))
 						/ Math.log10(2.0);
 				//dataRate = (1.0 - alphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IL))	//RPS is considered
 						/// Math.log10(2.0);
-				dataRate = dataRate * (Params.BANDWIDTH / (mUeCount - mVictimCount));
+				//dataRate = dataRate * (Params.BANDWIDTH / (mUeCount - mVictimCount));
+				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
 			}
 		} else if (ueType == Params.FUE) {
 			if (ueVictim == true) {
 				dataRate = (alphaM) * Math.log10(1 + PathLoss.dB2watt(getSINRIFdb()))
 						/ Math.log10(2.0);
-				dataRate = dataRate * (Params.BANDWIDTH / target.getFapBS().getFapVictimCount());
+				//dataRate = dataRate * (Params.BANDWIDTH / target.getFapBS().getFapVictimCount());
+				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
 			} else {
 				dataRate = (1.0 - alphaM - alphaP) * Math.log10(1 + PathLoss.dB2watt(getSINRILdb()))
 						/ Math.log10(2.0);
 				//dataRate = (1.0 - alphaM) * Math.log10(1 + PathLoss.dB2watt(getSINRILdb()))		//RPS is considered
 						/// Math.log10(2.0);
-				dataRate = dataRate * (Params.BANDWIDTH / (target.getFapBS().getUECount() - target
-						.getFapBS().getFapVictimCount()));
+				//dataRate = dataRate * (Params.BANDWIDTH / (target.getFapBS().getUECount() - target.getFapBS().getFapVictimCount()));
+				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
 			}
 		}
 		else

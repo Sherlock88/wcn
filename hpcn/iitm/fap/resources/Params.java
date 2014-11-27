@@ -17,6 +17,19 @@ public interface Params {
 	public static final int MBSToUE = 35;
 	public static final int PBSToUE = 10;
 	
+	// Data rates
+	public static final int VOICE = 0;
+	public static final int DATA = 1;
+	public static final int VIDEO = 2;
+	public static final int VOICERATE = 16;
+	public static final int DATARATE = 48;
+	public static final int VIDEORATE = 128;
+	public static final int VOICERB = 1;		// Sub-channels
+	public static final int DATARB = 2;			// Sub-channels
+	public static final int VIDEORB = 7;		// Sub-channels
+	public static final double VOICEPROB = 0.2;
+	public static final double DATAPROB = 0.35;
+	public static final double VIDEOPROB = 0.45;
 
 	// Station types
 	public static final int STATIONMACRO = 0;
@@ -24,7 +37,9 @@ public interface Params {
 	public static final int STATIONUE = 2;
 	
 	// Resource blocks 	
-	public static final int NO_OF_CHANNELS = 256;	
+	public static final int NO_OF_CHANNELS = 250;	
+	public static final int RBCOUNT	= 250;
+	public static final int SUBCHANNEL	= 20;	//KHz
 
 	public static final int SCs_FOR_1_4_MHz = 6;
 	public static final int SCs_FOR_3_MHz = 15;
