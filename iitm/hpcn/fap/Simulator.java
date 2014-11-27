@@ -4,6 +4,8 @@ import hpcn.iitm.fap.resources.FAP;
 import hpcn.iitm.fap.resources.MAP;
 import hpcn.iitm.fap.resources.UE;
 import hpcn.iitm.fap.resources.Params;
+import hpcn.iitm.fap.resources.throughput;
+
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,6 +17,7 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
+
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 public class Simulator {
@@ -472,9 +475,21 @@ public class Simulator {
 			}
 		}
 		
+		throughput.throughputall=0.0;
+		throughput.throughputvall=0.0;
+		throughput.throughputmacrov=0.0;
+		throughput.throughputpicov=0.0;
+
 		for (UE ue : setUE)
+		{
 			//ue.calcDataRateABSFinal(getMacroUeCount(), getMacroVictimCount(), this.alphaM, this.alphaP);
 			ue.calcDataRateABSFinal(getMacroUeCount(), getMacroVictimCount(), this.alphaM, this.alphaP, this.maxAlphaP, totalResourceBlockDemand);
+		
+		}
+		System.out.println("T1"+" "+throughput.macrovue);
+		System.out.println("T2"+" "+throughput.picovue);
+		System.out.println("T3"+" "+throughput.tue);
+		//System.out.println("T4"+" "+throughput.throughputpicov);
 	}
 	
 	public void writeUeCount(PrintWriter ueCountWriter)

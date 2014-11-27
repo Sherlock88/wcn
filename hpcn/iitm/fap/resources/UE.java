@@ -1,5 +1,5 @@
 package hpcn.iitm.fap.resources;
-
+import hpcn.iitm.fap.resources.throughput;
 import hpcn.iitm.fap.resources.FAP;
 import hpcn.iitm.fap.resources.Params;
 import hpcn.iitm.fap.resources.TargetBsDTO;
@@ -28,7 +28,7 @@ public class UE {
 	private double rsrpMacroDB;
 	private double bitRate;
 	private double bitRateABS;
-
+    
 	private ArrayList<TargetBsDTO> fapList;
 	private HashSet<Integer> fapSet;
 
@@ -174,21 +174,27 @@ public class UE {
 				dataRate = 1.0 * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IF))
 						/ Math.log10(2.0); 
 				dataRate = dataRate * (Params.BANDWIDTH / mVictimCount);
+				
+
 			} else {
 				dataRate = 1.0 * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IL))
 						/ Math.log10(2.0);
 				dataRate = dataRate * (Params.BANDWIDTH / (mUeCount - mVictimCount));
+				
 			}
 		} else if (ueType == Params.FUE) {
 			if (ueVictim == true) {
 				dataRate = 1.0 * Math.log10(1 + PathLoss.dB2watt(getSINRIFdb()))
 						/ Math.log10(2.0);
 				dataRate = dataRate * (Params.BANDWIDTH / target.getFapBS().getFapVictimCount());
+			
 			} else {
 				dataRate = 1.0 * Math.log10(1 + PathLoss.dB2watt(getSINRILdb()))
 						/ Math.log10(2.0);
 				dataRate = dataRate * (Params.BANDWIDTH / (target.getFapBS().getUECount() - target
 						.getFapBS().getFapVictimCount()));
+				
+
 			}
 		}
 		else
@@ -206,28 +212,44 @@ public class UE {
 				dataRate = (maxAlphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IF))
 						/ Math.log10(2.0); 
 				//dataRate = dataRate * (Params.BANDWIDTH / mVictimCount);
-				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
+				dataRate = dataRate * ((double)Params.NO_OF_CHANNELS /(double)totalResourceBlockDemand) * this.dataRate;
+				//dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
+				throughput.throughputmacrov+=dataRate;
+				throughput.throughputall+=dataRate;
+				throughput.throughputvall+=dataRate;
+				throughput.macrovue++;
+				throughput.tue++;
 			} else {
 				dataRate = (1.0 - alphaM - maxAlphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IL))
 						/ Math.log10(2.0);
+				//System.out.println("klk"+dataRate);
 				//dataRate = (1.0 - alphaP) * Math.log10(1 + PathLoss.dB2watt(sinrMacroDB_IL))	//RPS is considered
 						/// Math.log10(2.0);
 				//dataRate = dataRate * (Params.BANDWIDTH / (mUeCount - mVictimCount));
-				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
+				dataRate = dataRate * ((double)Params.NO_OF_CHANNELS /(double)totalResourceBlockDemand) * this.dataRate;
+				throughput.throughputall+=dataRate;
+				throughput.tue++;
 			}
 		} else if (ueType == Params.FUE) {
 			if (ueVictim == true) {
 				dataRate = (alphaM) * Math.log10(1 + PathLoss.dB2watt(getSINRIFdb()))
 						/ Math.log10(2.0);
 				//dataRate = dataRate * (Params.BANDWIDTH / target.getFapBS().getFapVictimCount());
-				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
+				dataRate = dataRate * ((double)Params.NO_OF_CHANNELS /(double)totalResourceBlockDemand) * this.dataRate;
+				throughput.throughputpicov+=dataRate;
+				throughput.throughputall+=dataRate;
+				throughput.throughputvall+=dataRate;
+				throughput.picovue++;
+				throughput.tue++;
 			} else {
 				dataRate = (1.0 - alphaM - alphaP) * Math.log10(1 + PathLoss.dB2watt(getSINRILdb()))
 						/ Math.log10(2.0);
 				//dataRate = (1.0 - alphaM) * Math.log10(1 + PathLoss.dB2watt(getSINRILdb()))		//RPS is considered
 						/// Math.log10(2.0);
 				//dataRate = dataRate * (Params.BANDWIDTH / (target.getFapBS().getUECount() - target.getFapBS().getFapVictimCount()));
-				dataRate = dataRate * (Params.NO_OF_CHANNELS / totalResourceBlockDemand) * this.dataRate;
+				dataRate = dataRate * ((double)Params.NO_OF_CHANNELS /(double)totalResourceBlockDemand) * this.dataRate;
+				throughput.throughputall+=dataRate;
+				throughput.tue++;
 			}
 		}
 		else
